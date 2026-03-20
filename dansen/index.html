@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RSVP – Dansfeest 🎵</title>
+<title>RSVP – Dansen 🎵</title>
 <style>
   :root {
     --coral:#FF6B6B; --yellow:#FFE66D; --mint:#4ECDC4;
@@ -91,7 +91,7 @@
 <div id="confetti"></div>
 
 <section class="hero">
-  <div class="hero-badge">🎵 Feest-uitnodiging</div>
+  <div class="hero-badge">🎵 Dans-uitnodiging</div>
   <div class="names"><span class="name-a">Naam A</span> &amp; <span class="name-b">Naam B</span></div>
   <div class="date-small">📅 <span>zaterdag 14 juni 2026</span> · vanaf 21:00</div>
 </section>
@@ -292,7 +292,31 @@
     document.getElementById('btn-ont-no').className='tog-btn'+(val==='no'?' nocamp':'');
   }
 
-  function submitForm(){
+
+  // SUPABASE
+  const SUPABASE_URL = 'https://jcjrbnenetotdcqjcisv.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjanJibmVuZXRvdGRjcWpjaXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYyODgsImV4cCI6MjA4OTYxMjI4OH0.cktk4Cri1qovIJZyUiRrEurr4yhMPMLEMtGGzxSggbc';
+
+  async function saveRSVP(data) {
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/rsvps', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(data)
+      });
+      return res.ok;
+    } catch(e) {
+      console.error('Supabase fout:', e);
+      return false;
+    }
+  }
+
+  async function submitForm(){
     const naam=document.getElementById('naam').value.trim();
     const email=document.getElementById('email').value.trim();
     if(!naam){shake('naam');return;}
@@ -301,8 +325,23 @@
     if(attendance==='yes'&&!partner){alert('Kom je alleen of met partner? 👫');return;}
     if(attendance==='yes'&&!camping){alert('Zou je willen slapen op de camping? ⛺');return;}
     if(attendance==='yes'&&camping==='yes'&&!ontbijt){alert('Wil je ontbijt? 🍳');return;}
-    // TODO: Supabase opslag hier
+    const data = {
+      type: 'dansen',
+      naam: naam,
+      email: email,
+      aanwezig: attendance,
+      partner: partner || null,
+      partner_naam: attendance==='yes' && partner==='partner' ? document.getElementById('partner-naam').value.trim() : null,
+      camping: camping || null,
+      ontbijt: ontbijt || null,
+      tent_info: camping==='yes' ? document.getElementById('tent-info').value.trim() : null,
+      kleur: attendance==='yes' ? color1.value : null,
+      partner_kleur: attendance==='yes' && partner==='partner' ? color2.value : null,
+      bericht: document.getElementById('bericht').value.trim() || null
+    };
+    const ok = await saveRSVP(data);
     const voornaam=naam.split(' ')[0];
+    if(!ok) { alert('Er ging iets mis bij het opslaan. Probeer opnieuw!'); return; }
     if(attendance==='yes') showSuccess('🕺','Joepie, '+voornaam+'!','We zien je op de dansvloer! Tot 14 juni! 🎵',true);
     else showSuccess('💌','Jammer, '+voornaam+'…','We missen je, maar bedankt voor je antwoord!',false);
   }

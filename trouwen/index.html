@@ -311,7 +311,31 @@
     document.getElementById('btn-ob-no').className='tog-btn'+(v==='no'?' peach':'');
   }
 
-  function submitForm(){
+
+  // SUPABASE
+  const SUPABASE_URL = 'https://jcjrbnenetotdcqjcisv.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjanJibmVuZXRvdGRjcWpjaXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYyODgsImV4cCI6MjA4OTYxMjI4OH0.cktk4Cri1qovIJZyUiRrEurr4yhMPMLEMtGGzxSggbc';
+
+  async function saveRSVP(data) {
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/rsvps', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(data)
+      });
+      return res.ok;
+    } catch(e) {
+      console.error('Supabase fout:', e);
+      return false;
+    }
+  }
+
+  async function submitForm(){
     const naam=document.getElementById('naam').value.trim();
     const email=document.getElementById('email').value.trim();
     if(!naam){shake('naam');return;}

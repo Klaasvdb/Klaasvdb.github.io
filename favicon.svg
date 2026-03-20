@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#FFFBF0"/>
+  <rect width="64" height="64" rx="14" fill="none" stroke="#2D2D2D" stroke-width="3"/>
+  <!-- A -->
+  <text x="10" y="46" font-family="Georgia, serif" font-style="italic" font-size="36" font-weight="bold" fill="#FF6B6B">A</text>
+  <!-- K -->
+  <text x="33" y="46" font-family="Georgia, serif" font-style="italic" font-size="36" font-weight="bold" fill="#C3B1E1">K</text>
+</svg>

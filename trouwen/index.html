@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSVP — Hele dag 💍</title>
+<style>
+  :root {
+    --coral:#FF6B6B;--yellow:#FFE66D;--mint:#4ECDC4;--lavender:#C3B1E1;
+    --peach:#FFB347;--sky:#74C0FC;--bg:#FFFBF0;--dark:#2D2D2D;
+    --font-display:Georgia,'Times New Roman',serif;
+    --font-body:'Trebuchet MS','Gill Sans',Verdana,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--bg);color:var(--dark);overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(circle at 10% 20%,rgba(255,107,107,.08) 0%,transparent 40%),
+    radial-gradient(circle at 90% 80%,rgba(78,205,196,.08) 0%,transparent 40%),
+    radial-gradient(circle at 50% 50%,rgba(255,230,109,.06) 0%,transparent 60%)}
+  .confetti-dot{position:fixed;border-radius:50%;opacity:.18;animation:float linear infinite;pointer-events:none;z-index:0}
+  @keyframes float{0%{transform:translateY(110vh) rotate(0deg)}100%{transform:translateY(-10vh) rotate(720deg)}}
+  @keyframes popIn{from{opacity:0;transform:scale(.7) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes wiggle{0%,40%,60%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(15deg) scale(1.1)}}
+  @keyframes bounce{from{transform:scale(0)}to{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  .hero{position:relative;z-index:1;text-align:center;padding:60px 20px 40px}
+  .hero-badge{display:inline-block;background:var(--yellow);color:var(--dark);font-weight:800;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;padding:8px 20px;border-radius:50px;margin-bottom:20px;border:3px solid var(--dark);box-shadow:3px 3px 0 var(--dark);animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both}
+  .names{font-family:var(--font-display);font-style:italic;font-size:clamp(2.5rem,8vw,5rem);line-height:1.1;margin-bottom:8px;animation:popIn .6s .1s cubic-bezier(.34,1.56,.64,1) both}
+  .name-a{color:var(--coral)}.ampersand{color:var(--mint);display:inline-block;animation:wiggle 6s ease-in-out infinite}.name-b{color:var(--lavender)}
+  .date-pill{display:inline-flex;align-items:center;gap:10px;background:var(--mint);color:white;font-weight:800;font-size:1.1rem;padding:10px 28px;border-radius:50px;border:3px solid var(--dark);box-shadow:4px 4px 0 var(--dark);margin:16px 0;animation:popIn .6s .2s cubic-bezier(.34,1.56,.64,1) both}
+  .rsvp-section{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:20px 20px 80px}
+  .rsvp-header{text-align:center;margin-bottom:28px}
+  .rsvp-header h2{font-family:var(--font-display);font-style:italic;font-size:clamp(1.8rem,5vw,3rem);color:var(--coral);margin-bottom:6px}
+  .rsvp-header p{color:#888;font-size:.95rem;font-weight:600}
+  .rsvp-form{background:white;border:3px solid var(--dark);border-radius:24px;padding:36px;box-shadow:7px 7px 0 var(--dark)}
+  .field-group{margin-bottom:22px}
+  label{display:block;font-weight:800;font-size:.9rem;margin-bottom:8px;color:var(--dark)}
+  label .emoji{margin-right:6px}
+  input[type="text"],input[type="email"],textarea{width:100%;padding:12px 16px;border:2.5px solid var(--dark);border-radius:12px;font-family:var(--font-body);font-size:1rem;font-weight:600;background:var(--bg);color:var(--dark);transition:border-color .2s,box-shadow .2s;outline:none}
+  input:focus,textarea:focus{border-color:var(--coral);box-shadow:3px 3px 0 var(--coral)}
+  textarea{resize:vertical;min-height:80px}
+  .toggle-group{display:flex;gap:12px}
+  .tog-btn{flex:1;padding:13px;border:2.5px solid var(--dark);border-radius:12px;background:var(--bg);font-family:var(--font-body);font-weight:700;font-size:.95rem;cursor:pointer;transition:all .15s;text-align:center}
+  .tog-btn:hover{transform:translateY(-2px)}
+  .tog-btn.yes{background:var(--mint);border-color:var(--mint);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .tog-btn.no{background:var(--coral);border-color:var(--coral);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .tog-btn.lavender{background:var(--lavender);border-color:var(--lavender);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .tog-btn.peach{background:var(--peach);border-color:var(--peach);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .color-wheel-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px}
+  canvas.wheel{border-radius:50%;border:3px solid var(--dark);box-shadow:4px 4px 0 var(--dark);cursor:crosshair;touch-action:none}
+  .color-wheel-bottom{display:flex;align-items:center;gap:14px;width:100%}
+  .color-swatch{width:48px;height:48px;border-radius:50%;border:3px solid var(--dark);box-shadow:3px 3px 0 var(--dark);flex-shrink:0;transition:background .1s}
+  .color-hex-label{font-weight:800;font-size:1rem;color:var(--dark);letter-spacing:.05em}
+  .submit-btn{width:100%;padding:16px;background:var(--coral);color:white;border:3px solid var(--dark);border-radius:50px;font-family:var(--font-body);font-weight:800;font-size:1.15rem;cursor:pointer;box-shadow:5px 5px 0 var(--dark);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;margin-top:8px}
+  .submit-btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--dark)}
+  .submit-btn:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--dark)}
+  .success-msg{display:none;text-align:center;padding:40px 20px}
+  .success-msg .big-emoji{font-size:5rem;animation:bounce .6s cubic-bezier(.34,1.56,.64,1)}
+  .success-msg h3{font-family:var(--font-display);font-style:italic;font-size:2rem;color:var(--mint);margin:16px 0 8px}
+  .success-msg p{font-size:1rem;color:#888;font-weight:600}
+  .ics-btn{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:14px 28px;background:var(--sky);color:white;border:3px solid var(--dark);border-radius:50px;font-family:var(--font-body);font-weight:800;font-size:1rem;cursor:pointer;box-shadow:4px 4px 0 var(--dark);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;text-decoration:none}
+  .ics-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--dark)}
+  .deadline-note{text-align:center;margin-top:24px;font-size:1.2rem;color:#888;font-weight:800;background:var(--yellow);border:3px solid var(--dark);border-radius:16px;padding:16px 24px;box-shadow:4px 4px 0 var(--dark)}
+  .deadline-note strong{color:var(--coral);font-size:1.3rem}
+  footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:.85rem;color:#ccc;font-weight:600}
+  footer span{color:var(--coral)}
+  .hidden{display:none!important}
+  @media(max-width:500px){.rsvp-form{padding:24px 20px}.toggle-group{flex-direction:column}canvas.wheel{width:180px!important;height:180px!important}}
+</style>
+</head>
+<body>
+<div id="confetti"></div>
+
+<section class="hero">
+  <div class="hero-badge">💍 Hele dag</div>
+  <div class="names"><span class="name-a">Naam A</span><span class="ampersand"> &amp; </span><span class="name-b">Naam B</span></div>
+  <div class="date-pill">📅 &nbsp;zaterdag 14 juni 2026</div>
+</section>
+
+<section class="rsvp-section">
+  <div class="rsvp-header">
+    <h2>Ben je erbij? 🎉</h2>
+    <p>Ceremonie · Receptie · Diner · Feest</p>
+  </div>
+
+  <div class="rsvp-form">
+    <div id="form-content">
+
+      <div class="field-group">
+        <label><span class="emoji">👤</span>Jouw naam</label>
+        <input type="text" id="naam" placeholder="Voor- en achternaam" />
+      </div>
+
+      <div class="field-group">
+        <label><span class="emoji">✉️</span>E-mailadres</label>
+        <input type="email" id="email" placeholder="jij@voorbeeld.be" />
+      </div>
+
+      <div class="field-group">
+        <label><span class="emoji">🎊</span>Kom je?</label>
+        <div class="toggle-group">
+          <button class="tog-btn" id="btn-yes" onclick="setAttend('yes')">✅ Ja, ik kom!</button>
+          <button class="tog-btn" id="btn-no"  onclick="setAttend('no')">😢 Helaas niet</button>
+        </div>
+      </div>
+
+      <div id="extra" class="hidden">
+
+        <div class="field-group">
+          <label><span class="emoji">💑</span>Alleen of met partner?</label>
+          <div class="toggle-group">
+            <button class="tog-btn" id="btn-solo"    onclick="setPartner('solo')">🙋 Alleen</button>
+            <button class="tog-btn" id="btn-partner" onclick="setPartner('partner')">👫 Met partner</button>
+          </div>
+        </div>
+
+        <div class="field-group hidden" id="partner-naam-group">
+          <label><span class="emoji">👤</span>Naam van je partner</label>
+          <input type="text" id="partner-naam" placeholder="Voor- en achternaam" />
+        </div>
+
+        <div class="field-group">
+          <label><span class="emoji">⛺</span>Zou je willen slapen op de camping?</label>
+          <div class="toggle-group">
+            <button class="tog-btn" id="btn-camp"   onclick="setCamping('yes')">⛺ Ja, graag!</button>
+            <button class="tog-btn" id="btn-nocamp" onclick="setCamping('no')">🏠 Nee, ik ga naar huis</button>
+          </div>
+        </div>
+
+        <div class="field-group hidden" id="ontbijt-group">
+          <label><span class="emoji">🍳</span>Wil je ontbijt op de camping?</label>
+          <div class="toggle-group">
+            <button class="tog-btn" id="btn-ob-yes" onclick="setOntbijt('yes')">☕ Ja, lekker!</button>
+            <button class="tog-btn" id="btn-ob-no"  onclick="setOntbijt('no')">🙅 Nee, bedankt</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label><span class="emoji">🎨</span>Jouw lievelingskleur</label>
+          <div class="color-wheel-wrapper">
+            <canvas id="wiel1" class="wheel" width="220" height="220"></canvas>
+            <div class="color-wheel-bottom">
+              <div class="color-swatch" id="swatch1"></div>
+              <span class="color-hex-label" id="hex1">#FF6B6B</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group hidden" id="partner-kleur-group">
+          <label><span class="emoji">🎨</span>Lievelingskleur van je partner</label>
+          <div class="color-wheel-wrapper">
+            <canvas id="wiel2" class="wheel" width="220" height="220"></canvas>
+            <div class="color-wheel-bottom">
+              <div class="color-swatch" id="swatch2"></div>
+              <span class="color-hex-label" id="hex2">#4ECDC4</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label><span class="emoji">🥗</span>Allergieën of dieetwensen?</label>
+          <input type="text" id="dieet" placeholder="bv. vegetarisch, notenallergie, geen…" />
+        </div>
+
+      </div>
+
+      <div class="field-group">
+        <label><span class="emoji">💌</span>Berichtje voor ons? <em style="font-weight:400;color:#aaa">(optioneel)</em></label>
+        <textarea id="bericht" placeholder="Schrijf iets liefs… of grappigs 😄"></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="submitForm()">💌 &nbsp;Verstuur mijn antwoord</button>
+    </div>
+
+    <div class="success-msg" id="success-msg">
+      <div class="big-emoji" id="s-emoji">🎉</div>
+      <h3 id="s-title">Joepie!</h3>
+      <p id="s-text">We hebben je antwoord ontvangen!</p>
+      <div id="ics-wrapper"></div>
+    </div>
+  </div>
+
+  <div class="deadline-note">📬 Antwoord insturen vóór <strong>1 mei 2026</strong></div>
+</section>
+
+<footer>Made with <span>♥</span> for our big day &nbsp;·&nbsp; Naam A &amp; Naam B</footer>
+
+<script>
+
+  // CONFETTI
+  (function(){
+    const colors=['#FF6B6B','#FFE66D','#4ECDC4','#C3B1E1','#FFB347','#74C0FC'];
+    const cc=document.getElementById('confetti');
+    for(let i=0;i<25;i++){const d=document.createElement('div');d.className='confetti-dot';const s=Math.random()*18+8;d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}vw;top:${Math.random()*100}vh;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*-20}s;`;cc.appendChild(d);}
+  })();
+
+  // COLOR WHEEL
+  function drawWheel(canvasId, swatchId, labelId, initColor) {
+    const canvas=document.getElementById(canvasId);
+    if(!canvas)return;
+    const ctx=canvas.getContext('2d'),cx=canvas.width/2,cy=canvas.height/2,r=cx-4;
+    for(let a=0;a<360;a++){
+      const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+      grad.addColorStop(0,'white');
+      grad.addColorStop(0.5,`hsl(${a},100%,50%)`);
+      grad.addColorStop(1,`hsl(${a},60%,30%)`);
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,(a-1)*Math.PI/180,(a+1)*Math.PI/180);
+      ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    }
+    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*.15);
+    cg.addColorStop(0,'white');cg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.beginPath();ctx.arc(cx,cy,r*.15,0,Math.PI*2);ctx.fillStyle=cg;ctx.fill();
+    setSwatch(swatchId,labelId,initColor);
+  }
+
+  function setSwatch(swatchId,labelId,hex){
+    document.getElementById(swatchId).style.background=hex;
+    document.getElementById(labelId).textContent=hex.toUpperCase();
+  }
+
+  function pickColor(canvas,x,y){
+    const cx=canvas.width/2,cy=canvas.height/2,r=cx-4;
+    if(Math.sqrt((x-cx)**2+(y-cy)**2)>r)return null;
+    const p=canvas.getContext('2d').getImageData(x,y,1,1).data;
+    return '#'+[p[0],p[1],p[2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+
+  function bindWheel(canvasId, swatchId, labelId, colorRef) {
+    const canvas=document.getElementById(canvasId);
+    if(!canvas)return;
+    let drag=false;
+    function handle(e){
+      const r=canvas.getBoundingClientRect();
+      const sx=canvas.width/r.width,sy=canvas.height/r.height;
+      const cx=e.touches?e.touches[0].clientX:e.clientX;
+      const cy=e.touches?e.touches[0].clientY:e.clientY;
+      const col=pickColor(canvas,Math.round((cx-r.left)*sx),Math.round((cy-r.top)*sy));
+      if(col){setSwatch(swatchId,labelId,col);colorRef.val=col;}
+    }
+    canvas.addEventListener('mousedown',(e)=>{drag=true;handle(e);});
+    canvas.addEventListener('mousemove',(e)=>{if(drag)handle(e);});
+    canvas.addEventListener('mouseup',()=>drag=false);
+    canvas.addEventListener('mouseleave',()=>drag=false);
+    canvas.addEventListener('touchstart',(e)=>{e.preventDefault();handle(e);},{passive:false});
+    canvas.addEventListener('touchmove',(e)=>{e.preventDefault();handle(e);},{passive:false});
+  }
+
+  // ICS
+  function generateICS(wrapper) {
+    const ics=[
+      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//klanke.be//Trouwfeest//NL',
+      'BEGIN:VEVENT','UID:trouw-klanke-2026@klanke.be',
+      'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z',
+      'DTSTART;TZID=Europe/Brussels:20260614T140000',
+      'DTEND;TZID=Europe/Brussels:20260615T020000',
+      'SUMMARY:💍 Trouw Naam A & Naam B',
+      'DESCRIPTION:Ceremonie om 14:00 aan het Stadhuis Leuven.\nReceptie om 15:30 in Feestzaal De Mol.\nFeest tot 02:00!',
+      'LOCATION:Stadhuis Leuven\, Grote Markt 1\, 3000 Leuven',
+      'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY',
+      'DESCRIPTION:Nog 1 week tot het trouwfeest! 🎊','END:VALARM',
+      'END:VEVENT','END:VCALENDAR'
+    ].join('\r\n');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
+    a.download='trouw-naam-a-naam-b.ics';
+    a.className='ics-btn';
+    a.innerHTML='📅 &nbsp;Voeg toe aan agenda';
+    wrapper.appendChild(a);
+  }
+
+  function shake(id){
+    const el=document.getElementById(id);
+    el.style.borderColor='#FF6B6B';el.style.animation='shake .4s';
+    el.addEventListener('animationend',()=>{el.style.animation='';el.style.borderColor='';},{once:true});
+    el.focus();
+  }
+
+
+  let attend=null, partner=null, camping=null, ontbijt=null;
+  const kleur1={val:'#FF6B6B'}, kleur2={val:'#4ECDC4'};
+
+  function setAttend(v){
+    attend=v;
+    document.getElementById('btn-yes').className='tog-btn'+(v==='yes'?' yes':'');
+    document.getElementById('btn-no').className='tog-btn'+(v==='no'?' no':'');
+    document.getElementById('extra').classList.toggle('hidden',v!=='yes');
+    if(v==='yes'){ drawWheel('wiel1','swatch1','hex1',kleur1.val); bindWheel('wiel1','swatch1','hex1',kleur1); }
+  }
+
+  function setPartner(v){
+    partner=v;
+    document.getElementById('btn-solo').className='tog-btn'+(v==='solo'?' lavender':'');
+    document.getElementById('btn-partner').className='tog-btn'+(v==='partner'?' lavender':'');
+    document.getElementById('partner-naam-group').classList.toggle('hidden',v!=='partner');
+    document.getElementById('partner-kleur-group').classList.toggle('hidden',v!=='partner');
+    if(v==='partner'){ drawWheel('wiel2','swatch2','hex2',kleur2.val); bindWheel('wiel2','swatch2','hex2',kleur2); }
+  }
+
+  function setCamping(v){
+    camping=v;
+    document.getElementById('btn-camp').className='tog-btn'+(v==='yes'?' yes':'');
+    document.getElementById('btn-nocamp').className='tog-btn'+(v==='no'?' no':'');
+    document.getElementById('ontbijt-group').classList.toggle('hidden',v!=='yes');
+    if(v!=='yes'){ontbijt=null;document.getElementById('btn-ob-yes').className='tog-btn';document.getElementById('btn-ob-no').className='tog-btn';}
+  }
+
+  function setOntbijt(v){
+    ontbijt=v;
+    document.getElementById('btn-ob-yes').className='tog-btn'+(v==='yes'?' yes':'');
+    document.getElementById('btn-ob-no').className='tog-btn'+(v==='no'?' peach':'');
+  }
+
+  function submitForm(){
+    const naam=document.getElementById('naam').value.trim();
+    const email=document.getElementById('email').value.trim();
+    if(!naam){shake('naam');return;}
+    if(!email){shake('email');return;}
+    if(!attend){alert('Laat ons weten of je aanwezig bent! 🥺');return;}
+    if(attend==='yes'&&!partner){alert('Alleen of met partner? 👫');return;}
+    if(attend==='yes'&&!camping){alert('Slaap je op de camping? ⛺');return;}
+    if(attend==='yes'&&camping==='yes'&&!ontbijt){alert('Wil je ontbijt? 🍳');return;}
+
+    // TODO: Supabase opslag hier
+
+    document.getElementById('form-content').style.display='none';
+    document.getElementById('success-msg').style.display='block';
+    if(attend==='yes'){
+      document.getElementById('s-emoji').textContent='🎉';
+      document.getElementById('s-title').textContent='Joepie, '+naam.split(' ')[0]+'!';
+      document.getElementById('s-text').textContent='We kunnen niet wachten om je te zien! Tot 14 juni! 💕';
+      generateICS(document.getElementById('ics-wrapper'));
+    } else {
+      document.getElementById('s-emoji').textContent='💌';
+      document.getElementById('s-title').textContent='Jammer, '+naam.split(' ')[0]+'…';
+      document.getElementById('s-text').textContent='We missen je, maar bedankt voor je antwoord!';
+    }
+  }
+</script>
+</body>
+</html>

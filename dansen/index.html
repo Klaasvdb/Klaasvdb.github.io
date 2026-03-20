@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSVP – Dansfeest 🎵</title>
+<style>
+  :root {
+    --coral:#FF6B6B; --yellow:#FFE66D; --mint:#4ECDC4;
+    --lavender:#C3B1E1; --peach:#FFB347; --sky:#74C0FC;
+    --bg:#FFFBF0; --dark:#2D2D2D;
+    --font-display:Georgia,'Times New Roman',serif;
+    --font-body:'Trebuchet MS','Gill Sans',Verdana,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--bg);color:var(--dark);overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(circle at 10% 20%,rgba(255,107,107,0.08) 0%,transparent 40%),
+    radial-gradient(circle at 90% 80%,rgba(78,205,196,0.08) 0%,transparent 40%),
+    radial-gradient(circle at 50% 50%,rgba(255,230,109,0.06) 0%,transparent 60%)}
+  .confetti-dot{position:fixed;border-radius:50%;opacity:0.18;animation:float linear infinite;pointer-events:none;z-index:0}
+  @keyframes float{0%{transform:translateY(110vh) rotate(0deg)}100%{transform:translateY(-10vh) rotate(720deg)}}
+  @keyframes popIn{from{opacity:0;transform:scale(0.7) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  @keyframes bounce{from{transform:scale(0)}to{transform:scale(1)}}
+
+  /* HERO */
+  .hero{position:relative;z-index:1;text-align:center;padding:60px 20px 40px}
+  .hero-badge{display:inline-block;background:var(--yellow);color:var(--dark);font-weight:800;font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;padding:8px 20px;border-radius:50px;margin-bottom:20px;border:3px solid var(--dark);box-shadow:3px 3px 0 var(--dark);animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both}
+  .names{font-family:var(--font-display);font-style:italic;font-size:clamp(2rem,7vw,4.5rem);line-height:1.1;margin-bottom:8px;animation:popIn 0.6s 0.1s cubic-bezier(0.34,1.56,0.64,1) both}
+  .name-a{color:var(--coral)} .name-b{color:var(--lavender)}
+  .date-small{font-size:1rem;color:#888;font-weight:700;margin-top:6px;animation:popIn 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both}
+  .date-small span{color:var(--mint)}
+
+  /* RSVP SECTION */
+  .rsvp-section{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:10px 20px 80px}
+  .rsvp-header{text-align:center;margin-bottom:28px}
+  .rsvp-header h2{font-family:var(--font-display);font-style:italic;font-size:clamp(1.8rem,5vw,3rem);color:var(--coral);margin-bottom:6px}
+  .rsvp-header p{color:#888;font-size:1rem;font-weight:600}
+  .rsvp-form{background:white;border:3px solid var(--dark);border-radius:24px;padding:36px;box-shadow:7px 7px 0 var(--dark)}
+  .field-group{margin-bottom:22px}
+  label{display:block;font-weight:800;font-size:0.9rem;margin-bottom:8px;color:var(--dark)}
+  label .emoji{margin-right:6px}
+  input[type="text"],input[type="email"],textarea{width:100%;padding:12px 16px;border:2.5px solid var(--dark);border-radius:12px;font-family:var(--font-body);font-size:1rem;font-weight:600;background:var(--bg);color:var(--dark);transition:border-color 0.2s,box-shadow 0.2s;outline:none}
+  input:focus,textarea:focus{border-color:var(--coral);box-shadow:3px 3px 0 var(--coral)}
+  textarea{resize:vertical;min-height:80px}
+
+  /* TOGGLE BUTTONS */
+  .toggle-row{display:flex;gap:12px}
+  .tog-btn{flex:1;padding:13px;border:2.5px solid var(--dark);border-radius:12px;background:var(--bg);font-family:var(--font-body);font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.15s;text-align:center}
+  .tog-btn:hover{transform:translateY(-2px)}
+  .tog-btn.yes{background:var(--mint);border-color:var(--mint);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .tog-btn.no{background:var(--coral);border-color:var(--coral);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .tog-btn.sel{background:var(--lavender);border-color:var(--lavender);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .tog-btn.camp{background:var(--mint);border-color:var(--mint);color:white;box-shadow:3px 3px 0 var(--dark)}
+  .tog-btn.nocamp{background:var(--peach);border-color:var(--peach);color:white;box-shadow:3px 3px 0 var(--dark)}
+
+  /* COLOR WHEEL */
+  .color-wheel-wrapper{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .wheel-canvas{border-radius:50%;border:3px solid var(--dark);box-shadow:4px 4px 0 var(--dark);cursor:crosshair;touch-action:none}
+  .color-wheel-bottom{display:flex;align-items:center;gap:14px;width:100%}
+  .color-swatch{width:48px;height:48px;border-radius:50%;border:3px solid var(--dark);box-shadow:3px 3px 0 var(--dark);flex-shrink:0;transition:background 0.1s}
+  .color-hex-label{font-weight:800;font-size:1rem;color:var(--dark);letter-spacing:0.05em}
+
+  /* ICS BUTTON */
+  .ics-btn{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:14px 28px;background:var(--sky);color:white;border:3px solid var(--dark);border-radius:50px;font-family:var(--font-body);font-weight:800;font-size:1rem;cursor:pointer;box-shadow:4px 4px 0 var(--dark);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;text-decoration:none}
+  .ics-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--dark)}
+
+  /* SUBMIT */
+  .submit-btn{width:100%;padding:16px;background:var(--coral);color:white;border:3px solid var(--dark);border-radius:50px;font-family:var(--font-body);font-weight:800;font-size:1.15rem;cursor:pointer;box-shadow:5px 5px 0 var(--dark);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;margin-top:8px}
+  .submit-btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--dark)}
+  .submit-btn:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--dark)}
+
+  /* SUCCESS */
+  .success-msg{display:none;text-align:center;padding:40px 20px}
+  .success-msg .big-emoji{font-size:5rem;animation:bounce 0.6s cubic-bezier(0.34,1.56,0.64,1)}
+  .success-msg h3{font-family:var(--font-display);font-style:italic;font-size:2rem;color:var(--mint);margin:16px 0 8px}
+  .success-msg p{font-size:1rem;color:#888;font-weight:600}
+
+  /* DEADLINE */
+  .deadline-note{text-align:center;margin-top:24px;font-size:1.2rem;color:#888;font-weight:800;background:var(--yellow);border:3px solid var(--dark);border-radius:16px;padding:16px 24px;box-shadow:4px 4px 0 var(--dark)}
+  .deadline-note strong{color:var(--coral);font-size:1.3rem}
+
+  .hidden{display:none!important}
+  footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:0.85rem;color:#ccc;font-weight:600}
+  footer span{color:var(--coral)}
+  @media(max-width:500px){.rsvp-form{padding:24px 20px}.toggle-row{flex-direction:column}.wheel-canvas{width:180px!important;height:180px!important}}
+</style>
+</head>
+<body>
+<div id="confetti"></div>
+
+<section class="hero">
+  <div class="hero-badge">🎵 Feest-uitnodiging</div>
+  <div class="names"><span class="name-a">Naam A</span> &amp; <span class="name-b">Naam B</span></div>
+  <div class="date-small">📅 <span>zaterdag 14 juni 2026</span> · vanaf 21:00</div>
+</section>
+
+<section class="rsvp-section">
+  <div class="rsvp-header">
+    <h2>Ben je erbij? 🕺</h2>
+    <p>Laat het ons weten vóór 1 mei 2026</p>
+  </div>
+  <div class="rsvp-form">
+    <div id="form-content">
+
+      <div class="field-group">
+        <label><span class="emoji">👤</span>Jouw naam</label>
+        <input type="text" id="naam" placeholder="Voor- en achternaam" />
+      </div>
+      <div class="field-group">
+        <label><span class="emoji">✉️</span>E-mailadres</label>
+        <input type="email" id="email" placeholder="jij@voorbeeld.be" />
+      </div>
+
+      <div class="field-group">
+        <label><span class="emoji">🎊</span>Kom je?</label>
+        <div class="toggle-row">
+          <button class="tog-btn" id="btn-yes" onclick="setAttend('yes')">✅ Ja, ik dans mee!</button>
+          <button class="tog-btn" id="btn-no"  onclick="setAttend('no')">😢 Helaas niet</button>
+        </div>
+      </div>
+
+      <div id="extra" class="hidden">
+
+        <div class="field-group">
+          <label><span class="emoji">💑</span>Kom je alleen of met partner?</label>
+          <div class="toggle-row">
+            <button class="tog-btn" id="btn-solo"    onclick="setPartner('solo')">🙋 Alleen</button>
+            <button class="tog-btn" id="btn-partner" onclick="setPartner('partner')">👫 Met partner</button>
+          </div>
+        </div>
+
+        <div class="field-group hidden" id="partner-naam-group">
+          <label><span class="emoji">👤</span>Naam van je partner</label>
+          <input type="text" id="partner-naam" placeholder="Voor- en achternaam" />
+        </div>
+
+        <div class="field-group">
+          <label><span class="emoji">🎨</span>Wat is jouw lievelingskleur?</label>
+          <div class="color-wheel-wrapper">
+            <canvas id="wheel1" class="wheel-canvas" width="220" height="220"></canvas>
+            <div class="color-wheel-bottom">
+              <div class="color-swatch" id="swatch1"></div>
+              <span class="color-hex-label" id="label1">#FF6B6B</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group hidden" id="partner-kleur-group">
+          <label><span class="emoji">🎨</span>Lievelingskleur van je partner?</label>
+          <div class="color-wheel-wrapper">
+            <canvas id="wheel2" class="wheel-canvas" width="220" height="220"></canvas>
+            <div class="color-wheel-bottom">
+              <div class="color-swatch" id="swatch2"></div>
+              <span class="color-hex-label" id="label2">#4ECDC4</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label><span class="emoji">⛺</span>Zou je willen slapen op de camping?</label>
+          <div class="toggle-row">
+            <button class="tog-btn" id="btn-camp"   onclick="setCamping('yes')">⛺ Ja, graag!</button>
+            <button class="tog-btn" id="btn-nocamp" onclick="setCamping('no')">🏠 Nee, ik ga naar huis</button>
+          </div>
+        </div>
+
+        <div class="hidden" id="camping-extra">
+          <div class="field-group">
+            <label><span class="emoji">🍳</span>Wil je ontbijt op de camping?</label>
+            <div class="toggle-row">
+              <button class="tog-btn" id="btn-ont-yes" onclick="setOntbijt('yes')">☕ Ja, lekker!</button>
+              <button class="tog-btn" id="btn-ont-no"  onclick="setOntbijt('no')">🙅 Nee, bedankt</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label><span class="emoji">🏕️</span>Met hoeveel personen en met wie slaap je in de tent?</label>
+            <input type="text" id="tent-info" placeholder="bv. met z'n tweeën, ik en mijn partner" />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="field-group">
+        <label><span class="emoji">💌</span>Een berichtje? <em style="font-weight:400;color:#aaa">(optioneel)</em></label>
+        <textarea id="bericht" placeholder="Schrijf iets liefs… of grappigs 😄"></textarea>
+      </div>
+      <button class="submit-btn" onclick="submitForm()">💌 &nbsp;Verstuur mijn antwoord</button>
+    </div>
+
+    <div class="success-msg" id="success-msg">
+      <div class="big-emoji" id="success-emoji">🎉</div>
+      <h3 id="success-title">Joepie!</h3>
+      <p id="success-text"></p>
+      <div id="ics-wrapper"></div>
+    </div>
+  </div>
+  <div class="deadline-note">📬 Antwoord insturen vóór <strong>1 mei 2026</strong></div>
+</section>
+<footer>Made with <span>♥</span> for our big day &nbsp;·&nbsp; Naam A &amp; Naam B</footer>
+
+<script>
+
+  // CONFETTI
+  const _colors=['#FF6B6B','#FFE66D','#4ECDC4','#C3B1E1','#FFB347','#74C0FC'];
+  const _cc=document.getElementById('confetti');
+  for(let i=0;i<30;i++){const d=document.createElement('div');d.className='confetti-dot';const s=Math.random()*18+8;d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}vw;top:${Math.random()*100}vh;background:${_colors[Math.floor(Math.random()*_colors.length)]};animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*-20}s;`;_cc.appendChild(d);}
+
+  // COLOR WHEEL
+  function drawWheel(canvasEl, initColor) {
+    const ctx=canvasEl.getContext('2d'),cx=canvasEl.width/2,cy=canvasEl.height/2,r=cx-4;
+    for(let a=0;a<360;a++){const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,'white');g.addColorStop(0.5,`hsl(${a},100%,50%)`);g.addColorStop(1,`hsl(${a},60%,30%)`);ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,(a-1)*Math.PI/180,(a+1)*Math.PI/180);ctx.closePath();ctx.fillStyle=g;ctx.fill();}
+    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.15);cg.addColorStop(0,'white');cg.addColorStop(1,'rgba(255,255,255,0)');ctx.beginPath();ctx.arc(cx,cy,r*0.15,0,Math.PI*2);ctx.fillStyle=cg;ctx.fill();
+  }
+  function pickColor(canvasEl,x,y){const cx=canvasEl.width/2,cy=canvasEl.height/2,r=cx-4,dx=x-cx,dy=y-cy;if(Math.sqrt(dx*dx+dy*dy)>r)return null;const p=canvasEl.getContext('2d').getImageData(x,y,1,1).data;return'#'+[p[0],p[1],p[2]].map(v=>v.toString(16).padStart(2,'0')).join('');}
+  function bindWheel(canvasEl, swatchEl, labelEl, colorRef) {
+    let drag=false;
+    function handle(e){const rect=canvasEl.getBoundingClientRect();const sx=canvasEl.width/rect.width,sy=canvasEl.height/rect.height;const cx=e.touches?e.touches[0].clientX:e.clientX,cy=e.touches?e.touches[0].clientY:e.clientY;const x=(cx-rect.left)*sx,y=(cy-rect.top)*sy;const c=pickColor(canvasEl,Math.round(x),Math.round(y));if(c){colorRef.value=c;swatchEl.style.background=c;labelEl.textContent=c.toUpperCase();}}
+    canvasEl.addEventListener('mousedown',(e)=>{drag=true;handle(e);});
+    canvasEl.addEventListener('mousemove',(e)=>{if(drag)handle(e);});
+    canvasEl.addEventListener('mouseup',()=>drag=false);
+    canvasEl.addEventListener('mouseleave',()=>drag=false);
+    canvasEl.addEventListener('touchstart',(e)=>{e.preventDefault();handle(e);},{passive:false});
+    canvasEl.addEventListener('touchmove',(e)=>{e.preventDefault();handle(e);},{passive:false});
+    swatchEl.style.background=colorRef.value;
+    labelEl.textContent=colorRef.value.toUpperCase();
+  }
+
+  // ICS
+  function generateICS(wrapper, dtstart, dtend, summary, description) {
+    const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//klanke.be//Trouwfeest//NL',
+      'BEGIN:VEVENT','UID:trouw-klanke-2026@klanke.be',
+      'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z',
+      'DTSTART;TZID=Europe/Brussels:'+dtstart,'DTEND;TZID=Europe/Brussels:'+dtend,
+      'SUMMARY:'+summary,'DESCRIPTION:'+description,
+      'LOCATION:Stadhuis Leuven\\, Grote Markt 1\\, 3000 Leuven',
+      'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Nog 1 week tot het feest! 🎊','END:VALARM',
+      'END:VEVENT','END:VCALENDAR'].join('\\r\\n');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
+    a.download='trouw-klanke.ics'; a.className='ics-btn';
+    a.innerHTML='📅 &nbsp;Voeg toe aan agenda';
+    wrapper.appendChild(a);
+  }
+
+  // UTILS
+  function shake(id){const el=document.getElementById(id);el.style.borderColor='#FF6B6B';el.style.animation='shake 0.4s';el.addEventListener('animationend',()=>{el.style.animation='';el.style.borderColor='';},{once:true});el.focus();}
+  function showSuccess(emoji, title, text, showICS) {
+    document.getElementById('form-content').style.display='none';
+    document.getElementById('success-msg').style.display='block';
+    document.getElementById('success-emoji').textContent=emoji;
+    document.getElementById('success-title').textContent=title;
+    document.getElementById('success-text').textContent=text;
+    if(showICS) generateICS(document.getElementById('ics-wrapper'),'20260614T140000','20260615T020000','💍 Trouw Naam A & Naam B','Ceremonie om 14:00 · Receptie om 15:30 · Feest tot 02:00!');
+  }
+
+
+  let attendance=null, partner=null, camping=null, ontbijt=null;
+  const color1={value:'#FF6B6B'}, color2={value:'#4ECDC4'};
+  let wheelsDrawn=false;
+
+  function setAttend(val){
+    attendance=val;
+    document.getElementById('btn-yes').className='tog-btn'+(val==='yes'?' yes':'');
+    document.getElementById('btn-no').className='tog-btn'+(val==='no'?' no':'');
+    document.getElementById('extra').classList.toggle('hidden',val!=='yes');
+    if(val==='yes'&&!wheelsDrawn){
+      drawWheel(document.getElementById('wheel1'),color1.value);
+      bindWheel(document.getElementById('wheel1'),document.getElementById('swatch1'),document.getElementById('label1'),color1);
+      wheelsDrawn=true;
+    }
+  }
+  function setPartner(val){
+    partner=val;
+    document.getElementById('btn-solo').className='tog-btn'+(val==='solo'?' sel':'');
+    document.getElementById('btn-partner').className='tog-btn'+(val==='partner'?' sel':'');
+    document.getElementById('partner-naam-group').classList.toggle('hidden',val!=='partner');
+    document.getElementById('partner-kleur-group').classList.toggle('hidden',val!=='partner');
+    if(val==='partner'){drawWheel(document.getElementById('wheel2'),color2.value);bindWheel(document.getElementById('wheel2'),document.getElementById('swatch2'),document.getElementById('label2'),color2);}
+  }
+  function setCamping(val){
+    camping=val;
+    document.getElementById('btn-camp').className='tog-btn'+(val==='yes'?' camp':'');
+    document.getElementById('btn-nocamp').className='tog-btn'+(val==='no'?' nocamp':'');
+    document.getElementById('camping-extra').classList.toggle('hidden',val!=='yes');
+    if(val!=='yes'){ontbijt=null;document.getElementById('btn-ont-yes').className='tog-btn';document.getElementById('btn-ont-no').className='tog-btn';}
+  }
+  function setOntbijt(val){
+    ontbijt=val;
+    document.getElementById('btn-ont-yes').className='tog-btn'+(val==='yes'?' camp':'');
+    document.getElementById('btn-ont-no').className='tog-btn'+(val==='no'?' nocamp':'');
+  }
+
+  function submitForm(){
+    const naam=document.getElementById('naam').value.trim();
+    const email=document.getElementById('email').value.trim();
+    if(!naam){shake('naam');return;}
+    if(!email){shake('email');return;}
+    if(!attendance){alert('Laat ons weten of je aanwezig bent! 🥺');return;}
+    if(attendance==='yes'&&!partner){alert('Kom je alleen of met partner? 👫');return;}
+    if(attendance==='yes'&&!camping){alert('Zou je willen slapen op de camping? ⛺');return;}
+    if(attendance==='yes'&&camping==='yes'&&!ontbijt){alert('Wil je ontbijt? 🍳');return;}
+    // TODO: Supabase opslag hier
+    const voornaam=naam.split(' ')[0];
+    if(attendance==='yes') showSuccess('🕺','Joepie, '+voornaam+'!','We zien je op de dansvloer! Tot 14 juni! 🎵',true);
+    else showSuccess('💌','Jammer, '+voornaam+'…','We missen je, maar bedankt voor je antwoord!',false);
+  }
+</script>
+</body>
+</html>

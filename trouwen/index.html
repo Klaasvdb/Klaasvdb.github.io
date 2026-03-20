@@ -67,6 +67,11 @@
   .hidden{display:none!important}
   @media(max-width:500px){.rsvp-form{padding:24px 20px}.toggle-group{flex-direction:column}canvas.wheel{width:180px!important;height:180px!important}}
 </style>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 </head>
 <body>
 <div id="confetti"></div>
@@ -313,6 +318,8 @@
 
 
   // SUPABASE
+
+
   const SUPABASE_URL = 'https://jcjrbnenetotdcqjcisv.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjanJibmVuZXRvdGRjcWpjaXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYyODgsImV4cCI6MjA4OTYxMjI4OH0.cktk4Cri1qovIJZyUiRrEurr4yhMPMLEMtGGzxSggbc';
 
@@ -328,6 +335,10 @@
         },
         body: JSON.stringify(data)
       });
+      if (!res.ok) {
+        const err = await res.text();
+        console.error('Supabase error:', res.status, err);
+      }
       return res.ok;
     } catch(e) {
       console.error('Supabase fout:', e);
@@ -345,7 +356,23 @@
     if(attend==='yes'&&!camping){alert('Slaap je op de camping? ⛺');return;}
     if(attend==='yes'&&camping==='yes'&&!ontbijt){alert('Wil je ontbijt? 🍳');return;}
 
-    // TODO: Supabase opslag hier
+    const data = {
+      type: 'trouwen',
+      naam: naam,
+      email: email,
+      aanwezig: attend,
+      partner: partner || null,
+      partner_naam: attend==='yes' && partner==='partner' ? document.getElementById('partner-naam').value.trim() : null,
+      camping: camping || null,
+      ontbijt: ontbijt || null,
+      tent_info: camping==='yes' ? document.getElementById('tent-info').value.trim() : null,
+      kleur: attend==='yes' ? color1.value : null,
+      partner_kleur: attend==='yes' && partner==='partner' ? color2.value : null,
+      dieet: document.getElementById('dieet').value.trim() || null,
+      bericht: document.getElementById('bericht').value.trim() || null
+    };
+    const ok = await saveRSVP(data);
+    if(!ok) { alert('Er ging iets mis. Probeer opnieuw!'); return; }
 
     document.getElementById('form-content').style.display='none';
     document.getElementById('success-msg').style.display='block';

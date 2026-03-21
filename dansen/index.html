@@ -3,389 +3,531 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RSVP — Hele dag 💍</title>
-<style>
-  :root {
-    --coral:#FF6B6B;--yellow:#FFE66D;--mint:#4ECDC4;--lavender:#C3B1E1;
-    --peach:#FFB347;--sky:#74C0FC;--bg:#FFFBF0;--dark:#2D2D2D;
-    --font-display:Georgia,'Times New Roman',serif;
-    --font-body:'Trebuchet MS','Gill Sans',Verdana,sans-serif;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:var(--font-body);background:var(--bg);color:var(--dark);overflow-x:hidden}
-  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-    background-image:radial-gradient(circle at 10% 20%,rgba(255,107,107,.08) 0%,transparent 40%),
-    radial-gradient(circle at 90% 80%,rgba(78,205,196,.08) 0%,transparent 40%),
-    radial-gradient(circle at 50% 50%,rgba(255,230,109,.06) 0%,transparent 60%)}
-  .confetti-dot{position:fixed;border-radius:50%;opacity:.18;animation:float linear infinite;pointer-events:none;z-index:0}
-  @keyframes float{0%{transform:translateY(110vh) rotate(0deg)}100%{transform:translateY(-10vh) rotate(720deg)}}
-  @keyframes popIn{from{opacity:0;transform:scale(.7) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-  @keyframes wiggle{0%,40%,60%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(15deg) scale(1.1)}}
-  @keyframes bounce{from{transform:scale(0)}to{transform:scale(1)}}
-  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-  .hero{position:relative;z-index:1;text-align:center;padding:60px 20px 40px}
-  .hero-badge{display:inline-block;background:var(--yellow);color:var(--dark);font-weight:800;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;padding:8px 20px;border-radius:50px;margin-bottom:20px;border:3px solid var(--dark);box-shadow:3px 3px 0 var(--dark);animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both}
-  .names{font-family:var(--font-display);font-style:italic;font-size:clamp(2.5rem,8vw,5rem);line-height:1.1;margin-bottom:8px;animation:popIn .6s .1s cubic-bezier(.34,1.56,.64,1) both}
-  .name-a{color:var(--coral)}.ampersand{color:var(--mint);display:inline-block;animation:wiggle 6s ease-in-out infinite}.name-b{color:var(--lavender)}
-  .date-pill{display:inline-flex;align-items:center;gap:10px;background:var(--mint);color:white;font-weight:800;font-size:1.1rem;padding:10px 28px;border-radius:50px;border:3px solid var(--dark);box-shadow:4px 4px 0 var(--dark);margin:16px 0;animation:popIn .6s .2s cubic-bezier(.34,1.56,.64,1) both}
-  .rsvp-section{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:20px 20px 80px}
-  .rsvp-header{text-align:center;margin-bottom:28px}
-  .rsvp-header h2{font-family:var(--font-display);font-style:italic;font-size:clamp(1.8rem,5vw,3rem);color:var(--coral);margin-bottom:6px}
-  .rsvp-header p{color:#888;font-size:.95rem;font-weight:600}
-  .rsvp-form{background:white;border:3px solid var(--dark);border-radius:24px;padding:36px;box-shadow:7px 7px 0 var(--dark)}
-  .field-group{margin-bottom:22px}
-  label{display:block;font-weight:800;font-size:.9rem;margin-bottom:8px;color:var(--dark)}
-  label .emoji{margin-right:6px}
-  input[type="text"],input[type="email"],textarea{width:100%;padding:12px 16px;border:2.5px solid var(--dark);border-radius:12px;font-family:var(--font-body);font-size:1rem;font-weight:600;background:var(--bg);color:var(--dark);transition:border-color .2s,box-shadow .2s;outline:none}
-  input:focus,textarea:focus{border-color:var(--coral);box-shadow:3px 3px 0 var(--coral)}
-  textarea{resize:vertical;min-height:80px}
-  .toggle-group{display:flex;gap:12px}
-  .tog-btn{flex:1;padding:13px;border:2.5px solid var(--dark);border-radius:12px;background:var(--bg);font-family:var(--font-body);font-weight:700;font-size:.95rem;cursor:pointer;transition:all .15s;text-align:center}
-  .tog-btn:hover{transform:translateY(-2px)}
-  .tog-btn.yes{background:var(--mint);border-color:var(--mint);color:white;box-shadow:3px 3px 0 var(--dark)}
-  .tog-btn.no{background:var(--coral);border-color:var(--coral);color:white;box-shadow:3px 3px 0 var(--dark)}
-  .tog-btn.lavender{background:var(--lavender);border-color:var(--lavender);color:white;box-shadow:3px 3px 0 var(--dark)}
-  .tog-btn.peach{background:var(--peach);border-color:var(--peach);color:white;box-shadow:3px 3px 0 var(--dark)}
-  .color-wheel-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px}
-  canvas.wheel{border-radius:50%;border:3px solid var(--dark);box-shadow:4px 4px 0 var(--dark);cursor:crosshair;touch-action:none}
-  .color-wheel-bottom{display:flex;align-items:center;gap:14px;width:100%}
-  .color-swatch{width:48px;height:48px;border-radius:50%;border:3px solid var(--dark);box-shadow:3px 3px 0 var(--dark);flex-shrink:0;transition:background .1s}
-  .color-hex-label{font-weight:800;font-size:1rem;color:var(--dark);letter-spacing:.05em}
-  .submit-btn{width:100%;padding:16px;background:var(--coral);color:white;border:3px solid var(--dark);border-radius:50px;font-family:var(--font-body);font-weight:800;font-size:1.15rem;cursor:pointer;box-shadow:5px 5px 0 var(--dark);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;margin-top:8px}
-  .submit-btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--dark)}
-  .submit-btn:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--dark)}
-  .success-msg{display:none;text-align:center;padding:40px 20px}
-  .success-msg .big-emoji{font-size:5rem;animation:bounce .6s cubic-bezier(.34,1.56,.64,1)}
-  .success-msg h3{font-family:var(--font-display);font-style:italic;font-size:2rem;color:var(--mint);margin:16px 0 8px}
-  .success-msg p{font-size:1rem;color:#888;font-weight:600}
-  .ics-btn{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:14px 28px;background:var(--sky);color:white;border:3px solid var(--dark);border-radius:50px;font-family:var(--font-body);font-weight:800;font-size:1rem;cursor:pointer;box-shadow:4px 4px 0 var(--dark);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;text-decoration:none}
-  .ics-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--dark)}
-  .deadline-note{text-align:center;margin-top:24px;font-size:1.2rem;color:#888;font-weight:800;background:var(--yellow);border:3px solid var(--dark);border-radius:16px;padding:16px 24px;box-shadow:4px 4px 0 var(--dark)}
-  .deadline-note strong{color:var(--coral);font-size:1.3rem}
-  footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:.85rem;color:#ccc;font-weight:600}
-  footer span{color:var(--coral)}
-  .hidden{display:none!important}
-  @media(max-width:500px){.rsvp-form{padding:24px 20px}.toggle-group{flex-direction:column}canvas.wheel{width:180px!important;height:180px!important}}
-</style>
+<title>RSVP – Dansen 🎵</title>
+<script src="/config.js"></script>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+  :root {
+    --paper: #faf7f2;
+    --ink: #2a2118;
+    --ink-light: #6a5a4a;
+    --pastel-pink: #f4a7b0;
+    --pastel-blue: #a8c8e8;
+    --pastel-green: #a8d8b0;
+    --pastel-yellow: #f8e4a0;
+    --pastel-lavender: #c8b8e8;
+    --pastel-peach: #f8c8a0;
+    --font-sketch: 'Segoe Print','Bradley Hand','Comic Sans MS',cursive;
+    --font-body: 'Trebuchet MS','Gill Sans',Verdana,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overflow-x:hidden;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(255,240,210,0.6) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(255,230,190,0.4) 0%, transparent 55%),
+      radial-gradient(ellipse at 60% 10%, rgba(250,245,225,0.5) 0%, transparent 50%),
+      #faf7f2;
+  }
+  body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.025;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:128px 128px;}
+
+  /* HAND-DRAWN BORDERS — organic imperfect corners */
+  .rsvp-form, .card, .cd-block, .hero-badge, .date-pill,
+  .tog-btn, .submit-btn, .deadline-note, .ics-btn {
+    outline: none !important;
+    border: 2px solid var(--ink) !important;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px !important;
+    position: relative;
+  }
+  /* Second wobbly border layer via ::before */
+  .rsvp-form::before, .card::before, .cd-block::before,
+  .hero-badge::before, .date-pill::before, .tog-btn::before,
+  .submit-btn::before, .deadline-note::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 1.5px solid var(--ink);
+    border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px;
+    opacity: 0.25;
+    pointer-events: none;
+  }
+  .rsvp-form::after, .card::after, .cd-block::after,
+  .hero-badge::after, .date-pill::after, .tog-btn::after,
+  .submit-btn::after, .deadline-note::after, .ics-btn::after {
+    display: none !important;
+  }
+
+  /* Floating illustrations */
+  .sketch-floats{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .sketch-float{position:absolute;opacity:0.15;animation:floatSketchy linear infinite;}
+  @keyframes floatSketchy{0%{transform:translateY(110vh) rotate(0deg)}100%{transform:translateY(-15vh) rotate(20deg)}}
+  .f1{width:60px;left:5%;animation-duration:28s;animation-delay:-4s}
+  .f2{width:70px;left:15%;animation-duration:22s;animation-delay:-10s}
+  .f3{width:45px;left:30%;animation-duration:32s;animation-delay:-2s}
+  .f4{width:55px;left:48%;animation-duration:25s;animation-delay:-15s}
+  .f5{width:65px;left:62%;animation-duration:30s;animation-delay:-7s}
+  .f6{width:40px;left:75%;animation-duration:20s;animation-delay:-12s}
+  .f7{width:55px;left:85%;animation-duration:27s;animation-delay:-3s}
+  .f8{width:45px;left:92%;animation-duration:24s;animation-delay:-18s}
+  .f9{width:120px;left:2%;animation-duration:35s;animation-delay:-8s}
+  .f10{width:50px;left:22%;animation-duration:38s;animation-delay:-22s}
+  .f11{width:60px;left:40%;animation-duration:18s;animation-delay:-5s}
+  .f12{width:40px;left:55%;animation-duration:15s;animation-delay:-11s}
+  .f13{width:35px;left:70%;animation-duration:22s;animation-delay:-16s}
+  .f14{width:45px;left:80%;animation-duration:40s;animation-delay:-28s}
+  .f15{width:100px;left:60%;animation-duration:32s;animation-delay:-6s}
+  .f16{width:65px;left:8%;animation-duration:26s;animation-delay:-14s}
+  .f17{width:45px;left:35%;animation-duration:34s;animation-delay:-20s}
+  .f18{width:75px;left:50%;animation-duration:42s;animation-delay:-9s}
+  .f19{width:35px;left:88%;animation-duration:21s;animation-delay:-3s}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes wiggle{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+  .fade-up{animation:fadeUp 0.5s ease both}
+  .fade-up-1{animation-delay:0.1s}.fade-up-2{animation-delay:0.2s}.fade-up-3{animation-delay:0.3s}.fade-up-4{animation-delay:0.4s}
+
+  /* HERO */
+  .hero{position:relative;z-index:1;text-align:center;padding:70px 20px 50px}
+  .hero-badge{display:inline-block;background:var(--pastel-yellow);color:var(--ink);font-family:var(--font-sketch);font-size:0.85rem;padding:6px 18px;margin-bottom:20px;position:relative;}
+  .hero-badge::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.8deg)}
+  .hero-badge::after{content:'';position:absolute;inset:-2px;border:1.5px solid var(--ink);transform:rotate(0.6deg);opacity:0.4}
+  .names{font-family:var(--font-sketch);font-size:clamp(2.5rem,8vw,5.5rem);line-height:1.15;margin-bottom:12px;}
+  .name-a{color:var(--ink);position:relative;display:inline-block}
+  .name-a::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:7px;background:var(--pastel-pink);opacity:0.7;transform:rotate(-0.5deg);border-radius:3px;z-index:-1}
+  .name-b{color:var(--ink);position:relative;display:inline-block}
+  .name-b::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:7px;background:var(--pastel-lavender);opacity:0.7;transform:rotate(0.5deg);border-radius:3px;z-index:-1}
+  .ampersand{color:var(--ink-light);display:inline-block;animation:wiggle 4s ease-in-out infinite;font-size:0.8em}
+  .date-pill{display:inline-block;background:var(--pastel-green);color:var(--ink);font-family:var(--font-sketch);font-size:1.15rem;padding:10px 28px;position:relative;margin:16px 0}
+  .date-pill::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.4deg)}
+  .location-tag{font-family:var(--font-sketch);font-size:0.95rem;color:var(--ink-light);margin-top:8px}
+
+  /* INFO CARDS */
+  .cards{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:24px;padding:40px 20px;max-width:900px;margin:0 auto}
+  .card{background:white;padding:24px 28px;text-align:center;flex:1 1 200px;max-width:240px;position:relative;transition:transform 0.2s}
+  .card::before{content:'';position:absolute;inset:-2px;border:2.5px solid var(--ink);transform:rotate(-0.6deg)}
+  .card::after{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(0.8deg);opacity:0.35}
+  .card:hover{transform:rotate(-1deg) scale(1.02)}
+  .card:nth-child(1){background:#fff8f8}.card:nth-child(2){background:#f8fff8}
+  .card:nth-child(3){background:#fffff0}.card:nth-child(4){background:#f8f8ff}
+  .card-icon{font-size:2.2rem;margin-bottom:10px}
+  .card h3{font-family:var(--font-sketch);font-size:0.8rem;letter-spacing:0.06em;color:var(--ink-light);margin-bottom:6px;text-transform:uppercase}
+  .card p{font-size:0.95rem;font-weight:600;color:var(--ink);line-height:1.4}
+
+  /* COUNTDOWN */
+  .countdown-section{position:relative;z-index:1;text-align:center;padding:20px 20px 50px}
+  .countdown-label{font-family:var(--font-sketch);font-size:1rem;color:var(--ink-light);margin-bottom:20px}
+  .countdown{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+  .cd-block{background:white;padding:14px 20px;min-width:85px;position:relative}
+  .cd-block::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.5deg)}
+  .cd-number{font-family:var(--font-sketch);font-size:2.3rem;line-height:1;color:var(--ink)}
+  .cd-unit{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-light);margin-top:4px;font-family:var(--font-sketch)}
+
+  /* RSVP */
+  .rsvp-section{position:relative;z-index:1;max-width:620px;margin:0 auto;padding:10px 20px 80px}
+  .rsvp-header{text-align:center;margin-bottom:28px}
+  .rsvp-header h2{font-family:var(--font-sketch);font-size:clamp(1.8rem,5vw,2.8rem);color:var(--ink);margin-bottom:8px;position:relative;display:inline-block}
+  .rsvp-header h2::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:8px;background:var(--pastel-pink);opacity:0.6;transform:rotate(-0.5deg);border-radius:3px;z-index:-1}
+  .rsvp-header p{font-family:var(--font-sketch);color:var(--ink-light);font-size:0.95rem}
+  .rsvp-form{background:white;padding:32px;position:relative}
+  .rsvp-form::before{content:'';position:absolute;inset:-3px;border:2.5px solid var(--ink);transform:rotate(-0.3deg)}
+  .rsvp-form::after{content:'';position:absolute;inset:-3px;border:2px solid var(--ink);transform:rotate(0.5deg);opacity:0.4}
+
+  .field-group{margin-bottom:22px;position:relative;z-index:1}
+  .field-label{display:block;font-family:var(--font-sketch);font-size:0.9rem;margin-bottom:8px;color:var(--ink-light)}
+
+  input[type="text"],input[type="email"],textarea{width:100%;padding:8px 4px;background:transparent;border:none;border-bottom:2px solid var(--ink);font-family:var(--font-body);font-size:1rem;color:var(--ink);outline:none;transition:border-color 0.2s}
+  input:focus,textarea:focus{border-bottom-color:var(--pastel-pink)}
+  input::placeholder,textarea::placeholder{color:#ccc;font-style:italic}
+  textarea{border:2px solid var(--ink);padding:10px;resize:vertical;min-height:80px}
+
+  .toggle-row{display:flex;gap:10px;flex-wrap:wrap}
+  .tog-btn{flex:1;padding:10px 14px;background:var(--paper);border:none;font-family:var(--font-sketch);font-size:0.9rem;cursor:pointer;color:var(--ink);transition:transform 0.15s;position:relative;min-width:100px}
+  .tog-btn::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.5deg)}
+  .tog-btn::after{content:'';position:absolute;inset:-2px;border:1.5px solid var(--ink);transform:rotate(0.7deg);opacity:0.4}
+  .tog-btn:hover{transform:translateY(-2px) rotate(-0.5deg)}
+  .tog-btn.yes{background:#d8f0dc}
+  .tog-btn.no{background:#f8d8d8}
+  .tog-btn.sel{background:#e4d8f4}
+  .tog-btn.camp{background:#d4ecf8}
+  .tog-btn.nocamp{background:#fce8d0}
+
+  /* Color wheel */
+  .color-wheel-wrapper{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .wheel-canvas{border-radius:50%;border:2.5px solid var(--ink);box-shadow:3px 3px 0 rgba(0,0,0,0.1);cursor:crosshair;touch-action:none}
+  .color-wheel-bottom{display:flex;align-items:center;gap:14px;width:100%}
+  .color-swatch{width:42px;height:42px;border-radius:50%;border:2.5px solid var(--ink);flex-shrink:0;transition:background 0.1s}
+  .color-hex-label{font-family:var(--font-sketch);font-size:0.9rem;color:var(--ink-light)}
+
+  /* ICS */
+  .ics-btn{display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:10px 22px;background:var(--pastel-blue);color:var(--ink);border:none;font-family:var(--font-sketch);font-size:0.9rem;cursor:pointer;text-decoration:none;position:relative}
+  .ics-btn::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.5deg)}
+
+  /* Submit */
+  .submit-btn{width:100%;padding:15px;background:var(--pastel-pink);color:var(--ink);border:none;font-family:var(--font-sketch);font-size:1.05rem;cursor:pointer;position:relative;transition:transform 0.15s;margin-top:8px}
+  .submit-btn::before{content:'';position:absolute;inset:-3px;border:2.5px solid var(--ink);transform:rotate(-0.4deg)}
+  .submit-btn::after{content:'';position:absolute;inset:-3px;border:2px solid var(--ink);transform:rotate(0.6deg);opacity:0.4}
+  .submit-btn:hover{transform:rotate(-0.5deg) scale(1.01)}
+
+  /* Success */
+  .success-msg{display:none;text-align:center;padding:36px 16px}
+  .success-msg .big-emoji{font-size:4.5rem;display:inline-block;animation:wiggle 1.5s ease-in-out infinite}
+  .success-msg h3{font-family:var(--font-sketch);font-size:1.8rem;color:var(--ink);margin:14px 0 8px;position:relative;display:inline-block}
+  .success-msg h3::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:6px;background:var(--pastel-green);opacity:0.6;border-radius:3px;z-index:-1}
+  .success-msg p{font-size:0.95rem;color:var(--ink-light)}
+
+  /* Deadline */
+  .deadline-note{text-align:center;margin-top:24px;font-family:var(--font-sketch);font-size:1.05rem;color:var(--ink);background:var(--pastel-yellow);padding:14px 20px;position:relative}
+  .deadline-note::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.3deg)}
+  .deadline-note strong{color:#b04020}
+
+  footer{position:relative;z-index:1;text-align:center;padding:28px 20px;font-family:var(--font-sketch);font-size:0.9rem;color:var(--ink-light)}
+
+  .hidden{display:none!important}
+  @media(max-width:500px){.toggle-row{flex-direction:column}.card{max-width:100%}.wheel-canvas{width:180px!important;height:180px!important}}
+
+  /* PROGRAMME TIMELINE */
+  .programme-wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:30px 20px 20px}
+  .programme{position:relative;padding-left:20px}
+  .programme::before{content:'';position:absolute;left:80px;top:8px;bottom:8px;width:2px;background:var(--ink);opacity:0.15;filter:url(#squiggle)}
+  .prog-item{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;animation:fadeUp 0.4s ease both}
+  .prog-time{font-family:var(--font-sketch);font-size:0.95rem;color:var(--ink-light);width:52px;flex-shrink:0;text-align:right;padding-top:2px}
+  .prog-icon{font-size:1.4rem;width:32px;flex-shrink:0;text-align:center;position:relative;z-index:1}
+  .prog-label{font-family:var(--font-sketch);font-size:0.95rem;color:var(--ink);line-height:1.4}
+  .prog-label small{font-size:0.8rem;color:var(--ink-light)}
+  .prog-highlight .prog-label{color:var(--ink);font-size:1rem}
+  .prog-highlight .prog-icon{background:var(--pastel-yellow);border-radius:50%;padding:2px;outline:2px solid var(--ink);filter:url(#squiggle)}
+  .prog-camping{opacity:0.7}
+  .parking-note{margin-top:16px;font-family:var(--font-sketch);font-size:0.9rem;color:var(--ink-light);text-align:center;padding:10px 16px;background:var(--pastel-blue);opacity:0.85;position:relative;outline:2px solid var(--ink);filter:url(#squiggle)}
+
+  /* Mobile colour preview bubble */
+  .color-thumb-preview {
+    display: none;
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    border-radius: 50% 50% 50% 0%;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -120%) rotate(-45deg);
+    transition: background 0.05s;
+    filter: url(#squiggle);
+  }
+  .color-thumb-preview.visible { display: block; }
+  .color-thumb-preview-label {
+    display: none;
+    position: fixed;
+    font-family: var(--font-sketch);
+    font-size: 0.8rem;
+    color: var(--ink);
+    pointer-events: none;
+    z-index: 10001;
+    transform: translate(-50%, -260%);
+    background: white;
+    padding: 2px 8px;
+    border: 1.5px solid var(--ink);
+    filter: url(#squiggle);
+  }
+  .color-thumb-preview-label.visible { display: block; }
+</style>
 </head>
 <body>
-<div id="confetti"></div>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="squiggle" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="turbulence" baseFrequency="0.006 0.012" numOctaves="2" seed="4" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+      <feGaussianBlur stdDeviation="0.3"/>
+    </filter>
+  </defs>
+</svg>
+<div class="color-thumb-preview" id="thumbPreview"></div>
+<div class="color-thumb-preview-label" id="thumbPreviewLabel"></div>
+<div class="sketch-floats" aria-hidden="true">
+  <svg class="sketch-float f1" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M20 8 Q18 28 26 38 L22 62 M38 8 Q40 28 32 38 L36 62"/><path d="M16 62 L44 62"/><path d="M14 8 L46 8 Q44 28 30 38 Q16 28 14 8Z"/><path d="M22 18 Q26 14 30 18 Q34 14 38 18"/><circle cx="24" cy="14" r="1.5"/><circle cx="30" cy="11" r="1"/><circle cx="36" cy="15" r="1.5"/></g></svg>
+  <svg class="sketch-float f2" viewBox="0 0 70 40" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2.5" stroke-linecap="round"><ellipse cx="22" cy="20" rx="18" ry="10"/><ellipse cx="48" cy="20" rx="18" ry="10"/><path d="M34 14 Q38 20 34 26" stroke-width="3" stroke="#faf7f2"/><path d="M36 14 Q32 20 36 26" stroke-width="3" stroke="#faf7f2"/><path d="M34 14 Q38 20 34 26"/><path d="M36 14 Q32 20 36 26"/></g></svg>
+  <svg class="sketch-float f3" viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M20 44 L20 16 L40 12 L40 40"/><ellipse cx="17" cy="46" rx="6" ry="4" transform="rotate(-15 17 46)"/><ellipse cx="37" cy="42" rx="6" ry="4" transform="rotate(-15 37 42)"/></g></svg>
+  <svg class="sketch-float f4" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><circle cx="30" cy="30" r="6"/><ellipse cx="30" cy="14" rx="5" ry="8"/><ellipse cx="30" cy="46" rx="5" ry="8"/><ellipse cx="14" cy="30" rx="8" ry="5"/><ellipse cx="46" cy="30" rx="8" ry="5"/><ellipse cx="19" cy="19" rx="5" ry="8" transform="rotate(45 19 19)"/><ellipse cx="41" cy="41" rx="5" ry="8" transform="rotate(45 41 41)"/><ellipse cx="41" cy="19" rx="5" ry="8" transform="rotate(-45 41 19)"/><ellipse cx="19" cy="41" rx="5" ry="8" transform="rotate(-45 19 41)"/></g></svg>
+  <svg class="sketch-float f5" viewBox="0 0 70 50" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M4 44 L35 8 L66 44 Z"/><path d="M22 44 L35 24 L48 44"/><path d="M4 44 L66 44"/><path d="M35 8 L35 4"/><path d="M20 6 L35 4 L50 6"/></g></svg>
+  <svg class="sketch-float f6" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M25 6 L28 18 L41 18 L31 26 L34 38 L25 30 L16 38 L19 26 L9 18 L22 18 Z"/></g></svg>
+  <!-- Ice cream cone -->
+  <svg class="sketch-float f7" viewBox="0 0 50 70" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M10 32 L25 64 L40 32 Z"/><path d="M12 36 L38 36"/><circle cx="25" cy="20" r="12"/><circle cx="18" cy="16" r="7"/><circle cx="32" cy="16" r="7"/><path d="M16 10 Q18 6 20 10"/><path d="M30 10 Q32 6 34 10"/></g></svg>
 
+  <!-- Camera -->
+  <svg class="sketch-float f16" viewBox="0 0 70 55" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><rect x="4" y="16" width="62" height="36" rx="4"/><path d="M22 16 L26 8 L44 8 L48 16"/><circle cx="35" cy="34" r="12"/><circle cx="35" cy="34" r="7"/><circle cx="55" cy="24" r="4"/><circle cx="14" cy="24" r="2"/></g></svg>
+
+  <!-- Calculator -->
+  <svg class="sketch-float f17" viewBox="0 0 50 70" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="38" height="62" rx="4"/><rect x="12" y="10" width="26" height="14" rx="2"/><circle cx="18" cy="36" r="3"/><circle cx="25" cy="36" r="3"/><circle cx="32" cy="36" r="3"/><circle cx="18" cy="46" r="3"/><circle cx="25" cy="46" r="3"/><circle cx="32" cy="46" r="3"/><circle cx="18" cy="56" r="3"/><circle cx="25" cy="56" r="3"/><rect x="29" y="53" width="6" height="6" rx="1"/></g></svg>
+
+  <!-- Extra tent -->
+  <svg class="sketch-float f18" viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M4 50 L40 6 L76 50 Z"/><path d="M24 50 L40 24 L56 50"/><path d="M4 50 L76 50"/><path d="M40 6 L40 2"/><path d="M28 4 L40 2 L52 4"/><path d="M32 50 Q40 40 48 50"/></g></svg>
+
+  <!-- Second ice cream - single scoop -->
+  <svg class="sketch-float f19" viewBox="0 0 36 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M8 30 L18 56 L28 30 Z"/><path d="M9 34 L27 34"/><circle cx="18" cy="20" r="12"/><path d="M13 14 Q15 10 18 13 Q21 10 23 14"/></g></svg>
+  <svg class="sketch-float f8" viewBox="0 0 50 45" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2.5" stroke-linecap="round"><path d="M25 38 C10 28 4 20 4 13 C4 7 9 4 14 4 C18 4 22 7 25 11 C28 7 32 4 36 4 C41 4 46 7 46 13 C46 20 40 28 25 38 Z"/></g></svg>
+
+  <!-- Bunting flags -->
+  <svg class="sketch-float f9" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M4 10 Q30 18 60 10 Q90 18 116 10"/><path d="M14 10 L8 30 L26 30 Z"/><path d="M36 14 L30 34 L48 34 Z"/><path d="M60 10 L54 30 L72 30 Z"/><path d="M84 14 L78 34 L96 34 Z"/><path d="M106 10 L100 30 L118 30 Z"/></g></svg>
+
+  <!-- Pine tree -->
+  <svg class="sketch-float f10" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M30 4 L8 30 L18 28 L6 50 L18 46 L8 68 L52 68 L42 46 L54 50 L42 28 L52 30 Z"/><rect x="24" y="68" width="12" height="10" rx="1"/></g></svg>
+
+  <!-- Bird in flight -->
+  <svg class="sketch-float f11" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M4 18 Q14 8 22 14 Q30 8 38 14 Q46 8 56 18"/><path d="M22 14 Q30 18 38 14"/></g></svg>
+
+  <!-- Second bird -->
+  <svg class="sketch-float f12" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M2 12 Q9 5 15 9 Q20 5 26 9 Q32 5 38 12"/><path d="M15 9 Q20 12 26 9"/></g></svg>
+
+  <!-- Balloon -->
+  <svg class="sketch-float f13" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><ellipse cx="20" cy="20" rx="16" ry="18"/><path d="M20 38 Q18 42 22 46 Q18 50 22 54"/><path d="M14 16 Q16 10 22 12"/></g></svg>
+
+  <!-- Little tree 2 -->
+  <svg class="sketch-float f14" viewBox="0 0 50 70" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M25 6 Q10 22 16 28 Q8 28 6 34 Q14 32 12 38 Q6 40 4 48 L46 48 Q44 40 38 38 Q36 32 44 34 Q42 28 34 28 Q40 22 25 6Z"/><rect x="21" y="48" width="8" height="14" rx="1"/></g></svg>
+
+  <!-- More bunting -->
+  <svg class="sketch-float f15" viewBox="0 0 100 45" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b8a888" stroke-width="2" stroke-linecap="round"><path d="M4 8 Q26 16 50 8 Q74 16 96 8"/><path d="M12 8 L7 26 L22 26 Z"/><path d="M38 12 L33 30 L48 30 Z"/><path d="M62 12 L57 30 L72 30 Z"/><path d="M88 8 L83 26 L98 26 Z"/></g></svg>
+</div>
 <section class="hero">
-  <div class="hero-badge">💍 Hele dag</div>
-  <div class="names"><span class="name-a">Naam A</span><span class="ampersand"> &amp; </span><span class="name-b">Naam B</span></div>
-  <div class="date-pill">📅 &nbsp;zaterdag 14 juni 2026</div>
+  <div class="hero-badge fade-up">🎵 Dans-uitnodiging</div>
+  <div class="names fade-up fade-up-1">
+    <span class="name-a" id="cfg-naam-a"></span>
+    <span class="ampersand"> &amp; </span>
+    <span class="name-b" id="cfg-naam-b"></span>
+  </div>
+  <div class="date-pill fade-up fade-up-2">📅 &nbsp;<span id="cfg-datum"></span> · vanaf 21:00</div>
 </section>
-
 <section class="rsvp-section">
   <div class="rsvp-header">
-    <h2>Ben je erbij? 🎉</h2>
-    <p>Ceremonie · Receptie · Diner · Feest</p>
+    <h2>Ben je erbij? 🕺</h2>
+    <p>Laat het ons weten vóór 1 mei 2026</p>
   </div>
-
   <div class="rsvp-form">
     <div id="form-content">
-
       <div class="field-group">
-        <label><span class="emoji">👤</span>Jouw naam</label>
+        <label class="field-label">👤 Jouw naam</label>
         <input type="text" id="naam" placeholder="Voor- en achternaam" />
       </div>
-
       <div class="field-group">
-        <label><span class="emoji">✉️</span>E-mailadres</label>
+        <label class="field-label">✉️ E-mailadres</label>
         <input type="email" id="email" placeholder="jij@voorbeeld.be" />
       </div>
-
       <div class="field-group">
-        <label><span class="emoji">🎊</span>Kom je?</label>
-        <div class="toggle-group">
-          <button class="tog-btn" id="btn-yes" onclick="setAttend('yes')">✅ Ja, ik kom!</button>
+        <label class="field-label">🎊 Kom je?</label>
+        <div class="toggle-row">
+          <button class="tog-btn" id="btn-yes" onclick="setAttend('yes')">✅ Ja, ik dans mee!</button>
           <button class="tog-btn" id="btn-no"  onclick="setAttend('no')">😢 Helaas niet</button>
         </div>
       </div>
-
       <div id="extra" class="hidden">
-
+        
         <div class="field-group">
-          <label><span class="emoji">💑</span>Alleen of met partner?</label>
-          <div class="toggle-group">
+          <label class="field-label">💑 Kom je alleen of met partner?</label>
+          <div class="toggle-row">
             <button class="tog-btn" id="btn-solo"    onclick="setPartner('solo')">🙋 Alleen</button>
             <button class="tog-btn" id="btn-partner" onclick="setPartner('partner')">👫 Met partner</button>
           </div>
         </div>
-
         <div class="field-group hidden" id="partner-naam-group">
-          <label><span class="emoji">👤</span>Naam van je partner</label>
+          <label class="field-label">👤 Naam van je partner</label>
           <input type="text" id="partner-naam" placeholder="Voor- en achternaam" />
         </div>
-
         <div class="field-group">
-          <label><span class="emoji">⛺</span>Zou je willen slapen op de camping?</label>
-          <div class="toggle-group">
+          <label class="field-label">🎨 Wat is jouw lievelingskleur?</label>
+          <div class="color-wheel-wrapper">
+            <canvas id="wheel1" class="wheel-canvas" width="220" height="220"></canvas>
+            <div class="color-wheel-bottom">
+              <div class="color-swatch" id="swatch1" style="background:#FF6B6B"></div>
+              <span class="color-hex-label" id="label1">#FF6B6B</span>
+            </div>
+          </div>
+        </div>
+        <div class="hidden" id="partner-kleur-group">
+          <div class="field-group">
+          <label class="field-label">🎨 Lievelingskleur van je partner?</label>
+          <div class="color-wheel-wrapper">
+            <canvas id="wheel2" class="wheel-canvas" width="220" height="220"></canvas>
+            <div class="color-wheel-bottom">
+              <div class="color-swatch" id="swatch2" style="background:#4ECDC4"></div>
+              <span class="color-hex-label" id="label2">#4ECDC4</span>
+            </div>
+          </div>
+        </div>
+        </div>
+        
+        <div class="field-group">
+          <label class="field-label">⛺ Zou je willen slapen op de camping?</label>
+          <div class="toggle-row">
             <button class="tog-btn" id="btn-camp"   onclick="setCamping('yes')">⛺ Ja, graag!</button>
             <button class="tog-btn" id="btn-nocamp" onclick="setCamping('no')">🏠 Nee, ik ga naar huis</button>
           </div>
         </div>
-
-        <div class="field-group hidden" id="ontbijt-group">
-          <label><span class="emoji">🍳</span>Wil je ontbijt op de camping?</label>
-          <div class="toggle-group">
-            <button class="tog-btn" id="btn-ob-yes" onclick="setOntbijt('yes')">☕ Ja, lekker!</button>
-            <button class="tog-btn" id="btn-ob-no"  onclick="setOntbijt('no')">🙅 Nee, bedankt</button>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label><span class="emoji">🎨</span>Jouw lievelingskleur</label>
-          <div class="color-wheel-wrapper">
-            <canvas id="wiel1" class="wheel" width="220" height="220"></canvas>
-            <div class="color-wheel-bottom">
-              <div class="color-swatch" id="swatch1"></div>
-              <span class="color-hex-label" id="hex1">#FF6B6B</span>
+        <div class="hidden" id="camping-extra">
+          <div class="field-group">
+            <label class="field-label">🍳 Wil je ontbijt op de camping?</label>
+            <div class="toggle-row">
+              <button class="tog-btn" id="btn-ont-yes" onclick="setOntbijt('yes')">☕ Ja, lekker!</button>
+              <button class="tog-btn" id="btn-ont-no"  onclick="setOntbijt('no')">🙅 Nee, bedankt</button>
             </div>
           </div>
-        </div>
-
-        <div class="field-group hidden" id="partner-kleur-group">
-          <label><span class="emoji">🎨</span>Lievelingskleur van je partner</label>
-          <div class="color-wheel-wrapper">
-            <canvas id="wiel2" class="wheel" width="220" height="220"></canvas>
-            <div class="color-wheel-bottom">
-              <div class="color-swatch" id="swatch2"></div>
-              <span class="color-hex-label" id="hex2">#4ECDC4</span>
-            </div>
+          <div class="field-group">
+            <label class="field-label">🏕️ Met hoeveel personen en met wie slaap je in de tent?</label>
+            <input type="text" id="tent-info" class="sketch-input" placeholder="bv. met z'n tweeën, ik en mijn partner" />
           </div>
         </div>
-
-        <div class="field-group">
-          <label><span class="emoji">🥗</span>Allergieën of dieetwensen?</label>
-          <input type="text" id="dieet" placeholder="bv. vegetarisch, notenallergie, geen…" />
-        </div>
-
       </div>
-
       <div class="field-group">
-        <label><span class="emoji">💌</span>Berichtje voor ons? <em style="font-weight:400;color:#aaa">(optioneel)</em></label>
+        <label class="field-label">💌 Een berichtje? <em style="font-style:italic;color:#aaa">(optioneel)</em></label>
         <textarea id="bericht" placeholder="Schrijf iets liefs… of grappigs 😄"></textarea>
       </div>
-
       <button class="submit-btn" onclick="submitForm()">💌 &nbsp;Verstuur mijn antwoord</button>
     </div>
-
     <div class="success-msg" id="success-msg">
-      <div class="big-emoji" id="s-emoji">🎉</div>
-      <h3 id="s-title">Joepie!</h3>
-      <p id="s-text">We hebben je antwoord ontvangen!</p>
+      <div class="big-emoji" id="success-emoji">🕺</div>
+      <h3 id="success-title"></h3>
+      <p id="success-text"></p>
       <div id="ics-wrapper"></div>
     </div>
   </div>
-
-  <div class="deadline-note">📬 Antwoord insturen vóór <strong>1 mei 2026</strong></div>
+  <div class="deadline-note">📬 Antwoord insturen vóór <strong id="cfg-deadline"></strong></div>
 </section>
-
-<footer>Made with <span>♥</span> for our big day &nbsp;·&nbsp; Naam A &amp; Naam B</footer>
-
+<footer>met veel ♥ gemaakt · <span id="cfg-namen-footer"></span></footer>
 <script>
 
-  // CONFETTI
-  (function(){
-    const colors=['#FF6B6B','#FFE66D','#4ECDC4','#C3B1E1','#FFB347','#74C0FC'];
-    const cc=document.getElementById('confetti');
-    for(let i=0;i<25;i++){const d=document.createElement('div');d.className='confetti-dot';const s=Math.random()*18+8;d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}vw;top:${Math.random()*100}vh;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*-20}s;`;cc.appendChild(d);}
-  })();
-
-  // COLOR WHEEL
-  function drawWheel(canvasId, swatchId, labelId, initColor) {
-    const canvas=document.getElementById(canvasId);
-    if(!canvas)return;
-    const ctx=canvas.getContext('2d'),cx=canvas.width/2,cy=canvas.height/2,r=cx-4;
-    for(let a=0;a<360;a++){
-      const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
-      grad.addColorStop(0,'white');
-      grad.addColorStop(0.5,`hsl(${a},100%,50%)`);
-      grad.addColorStop(1,`hsl(${a},60%,30%)`);
-      ctx.beginPath();ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,r,(a-1)*Math.PI/180,(a+1)*Math.PI/180);
-      ctx.closePath();ctx.fillStyle=grad;ctx.fill();
-    }
-    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*.15);
-    cg.addColorStop(0,'white');cg.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.beginPath();ctx.arc(cx,cy,r*.15,0,Math.PI*2);ctx.fillStyle=cg;ctx.fill();
-    setSwatch(swatchId,labelId,initColor);
-  }
-
-  function setSwatch(swatchId,labelId,hex){
-    document.getElementById(swatchId).style.background=hex;
-    document.getElementById(labelId).textContent=hex.toUpperCase();
-  }
-
-  function pickColor(canvas,x,y){
-    const cx=canvas.width/2,cy=canvas.height/2,r=cx-4;
-    if(Math.sqrt((x-cx)**2+(y-cy)**2)>r)return null;
-    const p=canvas.getContext('2d').getImageData(x,y,1,1).data;
-    return '#'+[p[0],p[1],p[2]].map(v=>v.toString(16).padStart(2,'0')).join('');
-  }
-
-  function bindWheel(canvasId, swatchId, labelId, colorRef) {
-    const canvas=document.getElementById(canvasId);
-    if(!canvas)return;
+  function drawWheel(canvasEl,initColor){const ctx=canvasEl.getContext('2d'),cx=canvasEl.width/2,cy=canvasEl.height/2,r=cx-4;for(let a=0;a<360;a++){const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,'white');g.addColorStop(0.5,`hsl(${a},100%,50%)`);g.addColorStop(1,`hsl(${a},60%,30%)`);ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,(a-1)*Math.PI/180,(a+1)*Math.PI/180);ctx.closePath();ctx.fillStyle=g;ctx.fill();}const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.15);cg.addColorStop(0,'white');cg.addColorStop(1,'rgba(255,255,255,0)');ctx.beginPath();ctx.arc(cx,cy,r*0.15,0,Math.PI*2);ctx.fillStyle=cg;ctx.fill();}
+  function pickColor(c,x,y){const cx=c.width/2,cy=c.height/2,r=cx-4,dx=x-cx,dy=y-cy;if(Math.sqrt(dx*dx+dy*dy)>r)return null;const p=c.getContext('2d').getImageData(x,y,1,1).data;return'#'+[p[0],p[1],p[2]].map(v=>v.toString(16).padStart(2,'0')).join('');}
+  function bindWheel(canvasEl,swatchEl,labelEl,colorRef){
     let drag=false;
-    function handle(e){
-      const r=canvas.getBoundingClientRect();
-      const sx=canvas.width/r.width,sy=canvas.height/r.height;
-      const cx=e.touches?e.touches[0].clientX:e.clientX;
-      const cy=e.touches?e.touches[0].clientY:e.clientY;
-      const col=pickColor(canvas,Math.round((cx-r.left)*sx),Math.round((cy-r.top)*sy));
-      if(col){setSwatch(swatchId,labelId,col);colorRef.val=col;}
-    }
-    canvas.addEventListener('mousedown',(e)=>{drag=true;handle(e);});
-    canvas.addEventListener('mousemove',(e)=>{if(drag)handle(e);});
-    canvas.addEventListener('mouseup',()=>drag=false);
-    canvas.addEventListener('mouseleave',()=>drag=false);
-    canvas.addEventListener('touchstart',(e)=>{e.preventDefault();handle(e);},{passive:false});
-    canvas.addEventListener('touchmove',(e)=>{e.preventDefault();handle(e);},{passive:false});
-  }
-
-  // ICS
-  function generateICS(wrapper) {
-    const ics=[
-      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//klanke.be//Trouwfeest//NL',
-      'BEGIN:VEVENT','UID:trouw-klanke-2026@klanke.be',
-      'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z',
-      'DTSTART;TZID=Europe/Brussels:20260614T140000',
-      'DTEND;TZID=Europe/Brussels:20260615T020000',
-      'SUMMARY:💍 Trouw Naam A & Naam B',
-      'DESCRIPTION:Ceremonie om 14:00 aan het Stadhuis Leuven.\nReceptie om 15:30 in Feestzaal De Mol.\nFeest tot 02:00!',
-      'LOCATION:Stadhuis Leuven\, Grote Markt 1\, 3000 Leuven',
-      'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY',
-      'DESCRIPTION:Nog 1 week tot het trouwfeest! 🎊','END:VALARM',
-      'END:VEVENT','END:VCALENDAR'
-    ].join('\r\n');
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
-    a.download='trouw-naam-a-naam-b.ics';
-    a.className='ics-btn';
-    a.innerHTML='📅 &nbsp;Voeg toe aan agenda';
-    wrapper.appendChild(a);
-  }
-
-  function shake(id){
-    const el=document.getElementById(id);
-    el.style.borderColor='#FF6B6B';el.style.animation='shake .4s';
-    el.addEventListener('animationend',()=>{el.style.animation='';el.style.borderColor='';},{once:true});
-    el.focus();
-  }
-
-
-  let attend=null, partner=null, camping=null, ontbijt=null;
-  const kleur1={val:'#FF6B6B'}, kleur2={val:'#4ECDC4'};
-
-  function setAttend(v){
-    attend=v;
-    document.getElementById('btn-yes').className='tog-btn'+(v==='yes'?' yes':'');
-    document.getElementById('btn-no').className='tog-btn'+(v==='no'?' no':'');
-    document.getElementById('extra').classList.toggle('hidden',v!=='yes');
-    if(v==='yes'){ drawWheel('wiel1','swatch1','hex1',kleur1.val); bindWheel('wiel1','swatch1','hex1',kleur1); }
-  }
-
-  function setPartner(v){
-    partner=v;
-    document.getElementById('btn-solo').className='tog-btn'+(v==='solo'?' lavender':'');
-    document.getElementById('btn-partner').className='tog-btn'+(v==='partner'?' lavender':'');
-    document.getElementById('partner-naam-group').classList.toggle('hidden',v!=='partner');
-    document.getElementById('partner-kleur-group').classList.toggle('hidden',v!=='partner');
-    if(v==='partner'){ drawWheel('wiel2','swatch2','hex2',kleur2.val); bindWheel('wiel2','swatch2','hex2',kleur2); }
-  }
-
-  function setCamping(v){
-    camping=v;
-    document.getElementById('btn-camp').className='tog-btn'+(v==='yes'?' yes':'');
-    document.getElementById('btn-nocamp').className='tog-btn'+(v==='no'?' no':'');
-    document.getElementById('ontbijt-group').classList.toggle('hidden',v!=='yes');
-    if(v!=='yes'){ontbijt=null;document.getElementById('btn-ob-yes').className='tog-btn';document.getElementById('btn-ob-no').className='tog-btn';}
-  }
-
-  function setOntbijt(v){
-    ontbijt=v;
-    document.getElementById('btn-ob-yes').className='tog-btn'+(v==='yes'?' yes':'');
-    document.getElementById('btn-ob-no').className='tog-btn'+(v==='no'?' peach':'');
-  }
-
-
-  // SUPABASE
-
-
-  const SUPABASE_URL = 'https://jcjrbnenetotdcqjcisv.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjanJibmVuZXRvdGRjcWpjaXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYyODgsImV4cCI6MjA4OTYxMjI4OH0.cktk4Cri1qovIJZyUiRrEurr4yhMPMLEMtGGzxSggbc';
-
-  async function saveRSVP(data) {
-    try {
-      const res = await fetch(SUPABASE_URL + '/rest/v1/rsvps', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify(data)
-      });
-      if (!res.ok) {
-        const err = await res.text();
-        console.error('Supabase error:', res.status, err);
+    const thumb=document.getElementById('thumbPreview');
+    const thumbLabel=document.getElementById('thumbPreviewLabel');
+    function showThumb(clientX,clientY,color){
+      if(!thumb)return;
+      thumb.style.background=color;
+      thumb.style.left=clientX+'px';
+      thumb.style.top=clientY+'px';
+      thumb.classList.add('visible');
+      if(thumbLabel){
+        thumbLabel.textContent=color.toUpperCase();
+        thumbLabel.style.left=clientX+'px';
+        thumbLabel.style.top=clientY+'px';
+        thumbLabel.classList.add('visible');
       }
-      return res.ok;
-    } catch(e) {
-      console.error('Supabase fout:', e);
-      return false;
     }
+    function hideThumb(){if(thumb){thumb.classList.remove('visible');}if(thumbLabel){thumbLabel.classList.remove('visible');}}
+    function handle(e,showPreview){
+      const rect=canvasEl.getBoundingClientRect();
+      const sx=canvasEl.width/rect.width,sy=canvasEl.height/rect.height;
+      const clientX=e.touches?e.touches[0].clientX:e.clientX;
+      const clientY=e.touches?e.touches[0].clientY:e.clientY;
+      const x=(clientX-rect.left)*sx,y=(clientY-rect.top)*sy;
+      const c=pickColor(canvasEl,Math.round(x),Math.round(y));
+      if(c){colorRef.value=c;swatchEl.style.background=c;labelEl.textContent=c.toUpperCase();if(showPreview)showThumb(clientX,clientY,c);}
+    }
+    canvasEl.addEventListener('mousedown',(e)=>{drag=true;handle(e,false);});
+    canvasEl.addEventListener('mousemove',(e)=>{if(drag)handle(e,false);});
+    canvasEl.addEventListener('mouseup',()=>{drag=false;});
+    canvasEl.addEventListener('mouseleave',()=>{drag=false;});
+    canvasEl.addEventListener('touchstart',(e)=>{e.preventDefault();handle(e,true);},{passive:false});
+    canvasEl.addEventListener('touchmove',(e)=>{e.preventDefault();handle(e,true);},{passive:false});
+    canvasEl.addEventListener('touchend',()=>hideThumb());
+    canvasEl.addEventListener('touchcancel',()=>hideThumb());
+    swatchEl.style.background=colorRef.value;labelEl.textContent=colorRef.value.toUpperCase();
   }
+  // Apply config
+  document.getElementById('cfg-naam-a').textContent=CONFIG.naam_a;
+  document.getElementById('cfg-naam-b').textContent=CONFIG.naam_b;
+  document.getElementById('cfg-datum').textContent=CONFIG.datum_kort;
+  document.getElementById('cfg-namen-footer').textContent=CONFIG.naam_a+' & '+CONFIG.naam_b;
+  if(document.getElementById('cfg-deadline'))document.getElementById('cfg-deadline').textContent=CONFIG.deadline;
+  const _setT = (id,val) => {{ const el=document.getElementById(id); if(el) el.textContent=val; }};
+  _setT('cfg-welkom-tijd',     CONFIG.welkom_tijd);
+  _setT('cfg-ceremonie-tijd',  CONFIG.ceremonie_tijd);
+  _setT('cfg-ceremonie-loc',   CONFIG.ceremonie_loc);
+  _setT('cfg-receptie-tijd',   CONFIG.receptie_tijd);
+  _setT('cfg-receptie-loc',    CONFIG.receptie_loc);
+  _setT('cfg-diner-tijd',      CONFIG.diner_tijd);
+  _setT('cfg-dessert-tijd',    CONFIG.dessert_tijd);
+  _setT('cfg-openingsdans-tijd',CONFIG.openingsdans_tijd);
+  _setT('cfg-ontbijt-tijd',    CONFIG.ontbijt_van+' - '+CONFIG.ontbijt_tot);
+  _setT('cfg-parking',         CONFIG.parking);
+  function generateICS(wrapper,dtstart,dtend,summary,description){const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//klanke.be//Trouwfeest//NL','BEGIN:VEVENT','UID:trouw-klanke-2026@klanke.be','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z','DTSTART;TZID=Europe/Brussels:'+dtstart,'DTEND;TZID=Europe/Brussels:'+dtend,'SUMMARY:'+summary,'DESCRIPTION:'+description,'LOCATION:Stadhuis Leuven\, Grote Markt 1\, 3000 Leuven','BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Nog 1 week tot het feest! 🎊','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));a.download='trouw-klanke.ics';a.className='ics-btn';a.innerHTML='📅 &nbsp;Voeg toe aan agenda';wrapper.appendChild(a);}
+  function shake(id){const el=document.getElementById(id);el.style.animation='shake 0.4s';el.addEventListener('animationend',()=>{el.style.animation='';},{once:true});el.focus();}
+  function showSuccess(emoji,title,text,showICS){document.getElementById('form-content').style.display='none';document.getElementById('success-msg').style.display='block';document.getElementById('success-emoji').textContent=emoji;document.getElementById('success-title').textContent=title;document.getElementById('success-text').textContent=text;if(showICS)generateICS(
+      document.getElementById('ics-wrapper'),
+      '20260614T130000','20260615T020000',
+      '💍 Ceremonie '+CONFIG.naam_a+' & '+CONFIG.naam_b,
+      CONFIG.welkom_tijd+' Welkom'
+      +'\n'+CONFIG.ceremonie_tijd+' Ceremonie ('+CONFIG.ceremonie_loc+')'
+      +'\n'+CONFIG.receptie_tijd+' Receptie ('+CONFIG.receptie_loc+')'
+      +'\n'+CONFIG.diner_tijd+' Diner'
+      +'\n'+CONFIG.dessert_tijd+' Dessert & Openingsfeest'
+      +'\n'+CONFIG.openingsdans_tijd+' Openingsdans'
+    );}
 
+
+  const SUPABASE_URL='https://jcjrbnenetotdcqjcisv.supabase.co';
+  const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjanJibmVuZXRvdGRjcWpjaXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYyODgsImV4cCI6MjA4OTYxMjI4OH0.cktk4Cri1qovIJZyUiRrEurr4yhMPMLEMtGGzxSggbc';
+  async function saveRSVP(data){try{const res=await fetch(SUPABASE_URL+'/rest/v1/rsvps',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},body:JSON.stringify(data)});if(!res.ok){const e=await res.text();console.error('Supabase error:',res.status,e);}return res.ok;}catch(e){console.error('Supabase fout:',e);return false;}}
+
+  let attend=null,partner=null,camping=null,ontbijt=null;
+  const color1={value:'#FF6B6B'},color2={value:'#4ECDC4'};
+  let wheelsDrawn=false;
+
+  function setAttend(val){
+    attend=val;
+    document.getElementById('btn-yes').className='tog-btn'+(val==='yes'?' yes':'');
+    document.getElementById('btn-no').className='tog-btn'+(val==='no'?' no':'');
+    document.getElementById('extra').classList.toggle('hidden',val!=='yes');
+    if(val==='yes'&&!wheelsDrawn){drawWheel(document.getElementById('wheel1'),color1.value);bindWheel(document.getElementById('wheel1'),document.getElementById('swatch1'),document.getElementById('label1'),color1);wheelsDrawn=true;}
+  }
+  function setPartner(val){
+    partner=val;
+    document.getElementById('btn-solo').className='tog-btn'+(val==='solo'?' sel':'');
+    document.getElementById('btn-partner').className='tog-btn'+(val==='partner'?' sel':'');
+    document.getElementById('partner-naam-group').classList.toggle('hidden',val!=='partner');
+    document.getElementById('partner-kleur-group').classList.toggle('hidden',val!=='partner');
+    if(val==='partner'){drawWheel(document.getElementById('wheel2'),color2.value);bindWheel(document.getElementById('wheel2'),document.getElementById('swatch2'),document.getElementById('label2'),color2);}
+  }
+  function setCamping(val){
+    camping=val;
+    document.getElementById('btn-camp').className='tog-btn'+(val==='yes'?' camp':'');
+    document.getElementById('btn-nocamp').className='tog-btn'+(val==='no'?' nocamp':'');
+    document.getElementById('camping-extra').classList.toggle('hidden',val!=='yes');
+    if(val!=='yes'){ontbijt=null;document.getElementById('btn-ont-yes').className='tog-btn';document.getElementById('btn-ont-no').className='tog-btn';}
+  }
+  function setOntbijt(val){
+    ontbijt=val;
+    document.getElementById('btn-ont-yes').className='tog-btn'+(val==='yes'?' camp':'');
+    document.getElementById('btn-ont-no').className='tog-btn'+(val==='no'?' nocamp':'');
+  }
   async function submitForm(){
     const naam=document.getElementById('naam').value.trim();
     const email=document.getElementById('email').value.trim();
     if(!naam){shake('naam');return;}
     if(!email){shake('email');return;}
     if(!attend){alert('Laat ons weten of je aanwezig bent! 🥺');return;}
-    if(attend==='yes'&&!partner){alert('Alleen of met partner? 👫');return;}
-    if(attend==='yes'&&!camping){alert('Slaap je op de camping? ⛺');return;}
+    if(attend==='yes'&&!partner){alert('Kom je alleen of met partner? 👫');return;}
+    if(attend==='yes'&&!camping){alert('Zou je willen slapen op de camping? ⛺');return;}
     if(attend==='yes'&&camping==='yes'&&!ontbijt){alert('Wil je ontbijt? 🍳');return;}
-
-    const data = {
-      type: 'trouwen',
-      naam: naam,
-      email: email,
-      aanwezig: attend,
-      partner: partner || null,
-      partner_naam: attend==='yes' && partner==='partner' ? document.getElementById('partner-naam').value.trim() : null,
-      camping: camping || null,
-      ontbijt: ontbijt || null,
-      tent_info: camping==='yes' ? document.getElementById('tent-info').value.trim() : null,
-      kleur: attend==='yes' ? color1.value : null,
-      partner_kleur: attend==='yes' && partner==='partner' ? color2.value : null,
-      dieet: document.getElementById('dieet').value.trim() || null,
-      bericht: document.getElementById('bericht').value.trim() || null
+    const data={
+      type:'dansen',naam,email,aanwezig:attend,
+      partner:partner||null,
+      partner_naam:attend==='yes'&&partner==='partner'?document.getElementById('partner-naam').value.trim():null,
+      camping:camping||null,ontbijt:ontbijt||null,
+      tent_info:camping==='yes'?document.getElementById('tent-info').value.trim():null,
+      kleur:attend==='yes'?color1.value:null,
+      partner_kleur:attend==='yes'&&partner==='partner'?color2.value:null,
+      
+      bericht:document.getElementById('bericht').value.trim()||null
     };
-    const ok = await saveRSVP(data);
-    if(!ok) { alert('Er ging iets mis. Probeer opnieuw!'); return; }
-
-    document.getElementById('form-content').style.display='none';
-    document.getElementById('success-msg').style.display='block';
-    if(attend==='yes'){
-      document.getElementById('s-emoji').textContent='🎉';
-      document.getElementById('s-title').textContent='Joepie, '+naam.split(' ')[0]+'!';
-      document.getElementById('s-text').textContent='We kunnen niet wachten om je te zien! Tot 14 juni! 💕';
-      generateICS(document.getElementById('ics-wrapper'));
-    } else {
-      document.getElementById('s-emoji').textContent='💌';
-      document.getElementById('s-title').textContent='Jammer, '+naam.split(' ')[0]+'…';
-      document.getElementById('s-text').textContent='We missen je, maar bedankt voor je antwoord!';
-    }
+    const ok=await saveRSVP(data);
+    if(!ok){alert('Er ging iets mis. Probeer opnieuw!');return;}
+    const voornaam=naam.split(' ')[0];
+    showSuccess("🕺","Joepie, "+voornaam+"!","We zien je op de dansvloer! Tot 14 juni! 🎵",true); 
   }
 </script>
 </body>

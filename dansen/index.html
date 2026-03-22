@@ -213,6 +213,34 @@
     canvasEl.addEventListener('touchcancel',()=>hideThumb());
     swatchEl.style.background=colorRef.value;labelEl.textContent=colorRef.value.toUpperCase();
   }
+
+  // PARALLAX
+  (function() {
+    const floats = document.querySelectorAll('.sketch-float');
+    const speeds = [0.08,0.14,0.06,0.10,0.12,0.07,0.09,0.11,
+                    0.05,0.13,0.08,0.10,0.06,0.09,0.07,0.11,0.13,0.05,0.08];
+    const rotations = [3,-4,5,-3,4,-5,3,-4,2,-3,5,-4,3,-5,4,-3,5,-4,3];
+    let ticking = false;
+
+    function applyParallax() {
+      const sy = window.scrollY;
+      floats.forEach((el, i) => {
+        const speed = speeds[i] || 0.08;
+        const rot   = rotations[i] || 3;
+        const ty    = sy * speed;
+        const rx    = Math.sin(sy * 0.003 + i) * rot;
+        el.style.transform = `translateY(${ty}px) rotate(${rx}deg)`;
+      });
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(applyParallax); ticking = true; }
+    }, { passive: true });
+
+    applyParallax();
+  })();
+
   // Apply config
   document.getElementById('cfg-naam-a').textContent=CONFIG.naam_a;
   document.getElementById('cfg-naam-b').textContent=CONFIG.naam_b;
@@ -229,7 +257,7 @@
   _setT('cfg-dessert-tijd',    CONFIG.dessert_tijd);
   _setT('cfg-openingsdans-tijd',CONFIG.openingsdans_tijd);
   _setT('cfg-ontbijt-tijd',    CONFIG.ontbijt_van+' - '+CONFIG.ontbijt_tot);
-  _setT('cfg-parking',         CONFIG.parking);
+  _setT('cfg-parking',         CONFIG.parking_naam + ' — ' + CONFIG.parking_adres);
   function generateICS(wrapper,dtstart,dtend,summary,description){const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//klanke.be//Trouwfeest//NL','BEGIN:VEVENT','UID:trouw-klanke-2026@klanke.be','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z','DTSTART;TZID=Europe/Brussels:'+dtstart,'DTEND;TZID=Europe/Brussels:'+dtend,'SUMMARY:'+summary,'DESCRIPTION:'+description,'LOCATION:Stadhuis Leuven\, Grote Markt 1\, 3000 Leuven','BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Nog 1 week tot het feest! 🎊','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));a.download='trouw-klanke.ics';a.className='ics-btn';a.innerHTML='📅 &nbsp;Voeg toe aan agenda';wrapper.appendChild(a);}
   function shake(id){const el=document.getElementById(id);el.style.animation='shake 0.4s';el.addEventListener('animationend',()=>{el.style.animation='';},{once:true});el.focus();}
   function showSuccess(emoji,title,text,showICS){document.getElementById('form-content').style.display='none';document.getElementById('success-msg').style.display='block';document.getElementById('success-emoji').textContent=emoji;document.getElementById('success-title').textContent=title;document.getElementById('success-text').textContent=text;if(showICS)generateICS(

@@ -106,7 +106,7 @@
 
   /* HERO */
   .hero{position:relative;z-index:2;text-align:center;padding:70px 20px 50px}
-  .hero-badge{display:inline-block;background:var(--pastel-yellow);color:var(--ink);font-family:var(--font-miracle);font-size:1rem;padding:6px 18px;margin-bottom:20px;position:relative;}
+  .hero-badge{display:inline-block;background:var(--pastel-yellow);color:var(--ink);font-family:var(--font-miracle);font-size:4rem;padding:6px 18px;margin-bottom:20px;position:relative;}
   .hero-badge::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.8deg)}
   .hero-badge::after{content:'';position:absolute;inset:-2px;border:1.5px solid var(--ink);transform:rotate(0.6deg);opacity:0.4}
   .names{font-family:var(--font-miracle);font-size:clamp(2.5rem,8vw,5.5rem);line-height:1.15;margin-bottom:12px;}

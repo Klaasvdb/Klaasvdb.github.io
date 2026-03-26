@@ -248,3 +248,17 @@
     filter: url(#squiggle);
   }
   .color-thumb-preview-label.visible { display: block; }
+
+
+
+
+.couple-image {
+  text-align: center;
+  margin: 0 auto 32px;
+  max-width: 500px;
+}
+
+.couple-image img {
+  width: 100%;
+  max-width: 500x;
+}

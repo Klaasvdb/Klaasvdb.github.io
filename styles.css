@@ -19,7 +19,7 @@
     --pastel-pink: #f4a7b0;
     --pastel-blue: #a8c8e8;
     --pastel-green: #a8d8b0;
-    --pastel-yellow: #f8e4a0;
+    --pastel-yellow: #f5f194;
     --pastel-lavender: #c8b8e8;
     --pastel-peach: #f8c8a0;
     --font-miracle: 'LittleMiracles', 'Segoe Print', cursive;
@@ -181,7 +181,7 @@
   .ics-btn::before{content:'';position:absolute;inset:-2px;border:2px solid var(--ink);transform:rotate(-0.5deg)}
 
   /* Submit */
-  .submit-btn{width:100%;padding:15px;background:var(--pastel-pink);color:var(--ink);border:none;font-family:var(--font-miracle);font-size:1.2rem;cursor:pointer;position:relative;transition:transform 0.15s;margin-top:8px}
+  .submit-btn{width:100%;padding:15px;background:var(--pastel-pink);color:var(--ink);border:none;font-family:var(--font-miracle);font-size:2rem;cursor:pointer;position:relative;transition:transform 0.15s;margin-top:8px}
   .submit-btn::before{content:'';position:absolute;inset:-3px;border:2.5px solid var(--ink);transform:rotate(-0.4deg)}
   .submit-btn::after{content:'';position:absolute;inset:-3px;border:2px solid var(--ink);transform:rotate(0.6deg);opacity:0.4}
   .submit-btn:hover{transform:rotate(-0.5deg) scale(1.01)}

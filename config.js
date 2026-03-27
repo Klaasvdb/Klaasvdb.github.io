@@ -2,10 +2,10 @@
 //  JOUW GEGEVENS — pas hier aan, nergens anders!
 // ═══════════════════════════════════════════════════════
 const CONFIG = {
-  naam_a:         "Anke",
-  naam_b:         "Klaas",
+  naam_a:         "Klaas",
+  naam_b:         "Anke",
   datum_kort:     "zaterdag 4 juli 2026",
-  datum_iso:      "2026-06-14T13:30:00",
+  datum_iso:      "2026-07-04T13:30:00",
   locatie:        "Blanden, Kartuizershof België",
 
   // Locatie (alles op hetzelfde adres)
@@ -31,4 +31,7 @@ const CONFIG = {
  
   // RSVP
   deadline:       "1 mei 2026",
+  // Tijden
+  ics_dtstart: '20260704T130000',   // startdatum+tijd in formaat YYYYMMDDTHHmmss
+  ics_dtend:   '20260705T020000',   // einddatum+tijd
 };

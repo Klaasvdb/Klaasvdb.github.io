@@ -332,7 +332,11 @@
     const ok=await saveRSVP(data);
     if(!ok){alert('Er ging iets mis. Probeer opnieuw!');return;}
     const voornaam=naam.split(' ')[0];
-    showSuccess("🕺","Joepie, "+voornaam+"!","We zien je op de dansvloer! Tot 4 juli! 🎵",true); 
+    if(attend==='yes'){
+      showSuccess("🎉","Joepie, "+voornaam+"!","We kunnen niet wachten om je te zien! Tot 4 juli! 💕",true);
+    } else {
+      showSuccess("💌","Bedankt, "+voornaam+".","Jammer dat je er niet bij kan zijn. Bedankt om iets te laten weten! 💛",false);
+    } 
   }
 </script>
 </body>

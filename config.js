@@ -10,7 +10,7 @@ const CONFIG = {
 
   // Locatie (alles op hetzelfde adres)
   locatie_naam:   "Veldje",       // bv. "Domein De Mol"
-  locatie_adres:  "Kartuizershof 1, Blanden",     // volledig adres voor in agenda & maps
+  locatie_adres:  "Kartuizershof 5, Blanden",     // volledig adres voor in agenda & maps
   locatie_kort:   "Blanden",   
   locatie_lat:    '50.82121626883111',       // coördinaten van je locatie
   locatie_lng:    '4.719379184566593',       // coördinaten van je locatie  

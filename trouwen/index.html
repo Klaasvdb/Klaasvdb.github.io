@@ -265,8 +265,8 @@
   _setT('cfg-openingsdans-tijd',CONFIG.openingsdans_tijd);
   _setT('cfg-ontbijt-tijd',    CONFIG.ontbijt_van+' - '+CONFIG.ontbijt_tot);
   _setT('cfg-parking',         CONFIG.parking_naam + ' — ' + CONFIG.parking_adres);
-  function generateICS(wrapper,dtstart,dtend,summary,description){
-  const ics=[
+  function generateICS(wrapper, dtstart, dtend, summary, description) {
+  const ics = [
     'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//klanke.be//Trouwfeest//NL',
     'BEGIN:VEVENT',
     'UID:trouw-klanke-2026@klanke.be',
@@ -275,38 +275,51 @@
     'DTEND;TZID=Europe/Brussels:'+dtend,
     'SUMMARY:'+summary,
     'DESCRIPTION:'+description,
-    'LOCATION:'+(CONFIG.locatie_naam+', '+CONFIG.locatie_adres),
+    'LOCATION:'+CONFIG.locatie_naam+', '+CONFIG.locatie_adres,
+    'GEO:'+CONFIG.locatie_lat+';'+CONFIG.locatie_lng,
     'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY',
     'DESCRIPTION:Nog 1 week tot het feest! 🎊',
     'END:VALARM',
     'END:VEVENT','END:VCALENDAR'
   ].join('\r\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
-  a.download='trouw-klanke.ics';
-  a.className='ics-btn';
-  a.innerHTML='📅 &nbsp;Voeg toe aan agenda';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([ics], {type:'text/calendar;charset=utf-8'}));
+  a.download = 'trouw-klanke.ics';
+  a.className = 'ics-btn';
+  a.innerHTML = '📅 &nbsp;Voeg toe aan agenda';
   wrapper.appendChild(a);
 }
-  
-  function showSuccess(emoji,title,text,showICS){
-  document.getElementById('form-content').style.display='none';
-  document.getElementById('success-msg').style.display='block';
-  document.getElementById('success-emoji').textContent=emoji;
-  document.getElementById('success-title').textContent=title;
-  document.getElementById('success-text').textContent=text;
-  if(showICS) generateICS(
-    document.getElementById('ics-wrapper'),
-    CONFIG.ics_dtstart,
-    CONFIG.ics_dtend,
-    '💍 ' + CONFIG.naam_a + ' & ' + CONFIG.naam_b,
-    CONFIG.welkom_tijd    + ' Welkom'
-    +'\n'+ CONFIG.ceremonie_tijd + ' Ceremonie (' + CONFIG.ceremonie_loc + ')'
-    +'\n'+ CONFIG.receptie_tijd  + ' Receptie ('  + CONFIG.receptie_loc  + ')'
-    +'\n'+ CONFIG.diner_tijd     + ' Diner'
-    +'\n'+ CONFIG.dessert_tijd   + ' Dessert & Openingsfeest'
-    +'\n'+ CONFIG.openingsdans_tijd + ' Openingsdans'
-  );
+
+function showSuccess(emoji, title, text, showICS, isCamping, isAvond) {
+  document.getElementById('form-content').style.display = 'none';
+  document.getElementById('success-msg').style.display = 'block';
+  document.getElementById('success-emoji').textContent = emoji;
+  document.getElementById('success-title').textContent = title;
+  document.getElementById('success-text').textContent = text;
+  if (showICS) {
+    let dtstart, dtend, description;
+    if (isAvond) {
+      dtstart = isCamping ? '20260704T193000' : '20260704T200000';
+      dtend   = '20260705T020000';
+      description = (isCamping ? '19:30' : '20:00') + ' Aankomst dansfeest'
+        +'\n'+ CONFIG.openingsdans_tijd + ' Openingsdans';
+    } else {
+      dtstart = isCamping ? '20260704T123000' : '20260704T133000';
+      dtend   = '20260705T020000';
+      description = (isCamping ? '12:30' : '13:30') + ' Aankomst & tent opzetten'
+        +'\n'+ CONFIG.ceremonie_tijd + ' Ceremonie (' + CONFIG.ceremonie_loc + ')'
+        +'\n'+ CONFIG.receptie_tijd  + ' Receptie ('  + CONFIG.receptie_loc  + ')'
+        +'\n'+ CONFIG.diner_tijd     + ' Diner'
+        +'\n'+ CONFIG.dessert_tijd   + ' Dessert & Openingsfeest'
+        +'\n'+ CONFIG.openingsdans_tijd + ' Openingsdans';
+    }
+    generateICS(
+      document.getElementById('ics-wrapper'),
+      dtstart, dtend,
+      '💍 ' + CONFIG.naam_a + ' & ' + CONFIG.naam_b,
+      description
+    );
+  }
 }
   function shake(id){const el=document.getElementById(id);el.style.animation='shake 0.4s';el.addEventListener('animationend',()=>{el.style.animation='';},{once:true});el.focus();}
 

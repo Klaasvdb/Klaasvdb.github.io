@@ -11,7 +11,11 @@ const CONFIG = {
   // Locatie (alles op hetzelfde adres)
   locatie_naam:   "Veldje",       // bv. "Domein De Mol"
   locatie_adres:  "Kartuizershof 1, Blanden",     // volledig adres voor in agenda & maps
-  locatie_kort:   "Blanden",            // kort voor in de hero
+  locatie_kort:   "Blanden",   
+  locatie_lat:    '50.82121626883111',       // coördinaten van je locatie
+  locatie_lng:    '4.719379184566593',       // coördinaten van je locatie  
+  
+  // kort voor in de hero
  
   // Parking (wat verderop)
   parking_naam:   "Parking Chiro/Voetbal",                 // naam van de parking
@@ -33,5 +37,5 @@ const CONFIG = {
   deadline:       "1 mei 2026",
   // Tijden
   ics_dtstart: '20260704T130000',   // startdatum+tijd in formaat YYYYMMDDTHHmmss
-  ics_dtend:   '20260705T020000',   // einddatum+tijd
+  ics_dtend:   '20260705T030000',   // einddatum+tijd
 };

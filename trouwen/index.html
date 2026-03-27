@@ -301,24 +301,25 @@ function showSuccess(emoji, title, text, showICS, isCamping, isAvond) {
     if (isAvond) {
       dtstart = isCamping ? '20260704T193000' : '20260704T200000';
       dtend   = '20260705T020000';
-      description = (isCamping ? '19:30' : '20:00') + ' Aankomst dansfeest'
-        +'\n'+ CONFIG.openingsdans_tijd + ' Openingsdans';
+      description = (isCamping ? '19:30 Aankomst kampeerders' : '20:00 Aankomst')
+        +'\\n'+ CONFIG.openingsdans_tijd + ' Openingsdans'
+        +'\\nParking: ' + CONFIG.parking_naam + ' - ' + CONFIG.parking_adres;
     } else {
       dtstart = isCamping ? '20260704T123000' : '20260704T133000';
       dtend   = '20260705T020000';
-      description = (isCamping ? '12:30 Aankomst kampeerders\\nTent opzetten & welkom' : '13:30 Aankomst')
-        +'\\n'+ CONFIG.welkom_tijd    + ' Officieel welkom'
-        +'\\n'+ CONFIG.ceremonie_tijd + ' Ceremonie (' + CONFIG.ceremonie_loc + ')'
-        +'\\n'+ CONFIG.receptie_tijd  + ' Receptie ('  + CONFIG.receptie_loc  + ')'
-        +'\\n'+ CONFIG.diner_tijd     + ' Diner'
-        +'\\n'+ CONFIG.dessert_tijd   + ' Dessert & Openingsfeest'
+      description = (isCamping ? '12:30 Aankomst kampeerders - tent opzetten' : '13:30 Aankomst')
+        +'\\n'+ CONFIG.welkom_tijd      + ' Officieel welkom'
+        +'\\n'+ CONFIG.ceremonie_tijd   + ' Ceremonie (' + CONFIG.ceremonie_loc + ')'
+        +'\\n'+ CONFIG.receptie_tijd    + ' Receptie ('  + CONFIG.receptie_loc  + ')'
+        +'\\n'+ CONFIG.diner_tijd       + ' Diner'
+        +'\\n'+ CONFIG.dessert_tijd     + ' Dessert & Openingsfeest'
         +'\\n'+ CONFIG.openingsdans_tijd + ' Openingsdans'
-        +'\\n🅿️ ' + CONFIG.parking_naam + ' — ' + CONFIG.parking_adres;
+        +'\\nParking: ' + CONFIG.parking_naam + ' - ' + CONFIG.parking_adres;
     }
     generateICS(
       document.getElementById('ics-wrapper'),
       dtstart, dtend,
-      '💍 ' + CONFIG.naam_a + ' & ' + CONFIG.naam_b,
+      CONFIG.naam_a + ' & ' + CONFIG.naam_b + ' - Trouwfeest',
       description
     );
   }

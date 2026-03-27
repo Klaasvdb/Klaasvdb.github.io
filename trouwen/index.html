@@ -300,13 +300,13 @@ function showSuccess(emoji, title, text, showICS, isCamping, isAvond) {
     let dtstart, dtend, description;
     if (isAvond) {
       dtstart = isCamping ? '20260704T193000' : '20260704T200000';
-      dtend   = '20260705T020000';
+      dtend   = '20260705T030000';
       description = (isCamping ? '19:30 Aankomst kampeerders' : '20:00 Aankomst')
         +'\\n'+ CONFIG.openingsdans_tijd + ' Openingsdans'
         +'\\nParking: ' + CONFIG.parking_naam + ' - ' + CONFIG.parking_adres;
     } else {
       dtstart = isCamping ? '20260704T123000' : '20260704T133000';
-      dtend   = '20260705T020000';
+      dtend   = '20260705T030000';
       description = (isCamping ? '12:30 Aankomst kampeerders - tent opzetten' : '13:30 Aankomst')
         +'\\n'+ CONFIG.welkom_tijd      + ' Officieel welkom'
         +'\\n'+ CONFIG.ceremonie_tijd   + ' Ceremonie '

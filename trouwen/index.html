@@ -285,17 +285,7 @@
   );
 }
   function shake(id){const el=document.getElementById(id);el.style.animation='shake 0.4s';el.addEventListener('animationend',()=>{el.style.animation='';},{once:true});el.focus();}
-  function showSuccess(emoji,title,text,showICS){document.getElementById('form-content').style.display='none';document.getElementById('success-msg').style.display='block';document.getElementById('success-emoji').textContent=emoji;document.getElementById('success-title').textContent=title;document.getElementById('success-text').textContent=text;if(showICS)generateICS(
-      document.getElementById('ics-wrapper'),
-      '20260614T130000','20260615T020000',
-      '💍 Ceremonie '+CONFIG.naam_a+' & '+CONFIG.naam_b,
-      CONFIG.welkom_tijd+' Welkom'
-      +'\n'+CONFIG.ceremonie_tijd+' Ceremonie ('+CONFIG.ceremonie_loc+')'
-      +'\n'+CONFIG.receptie_tijd+' Receptie ('+CONFIG.receptie_loc+')'
-      +'\n'+CONFIG.diner_tijd+' Diner'
-      +'\n'+CONFIG.dessert_tijd+' Dessert & Openingsfeest'
-      +'\n'+CONFIG.openingsdans_tijd+' Openingsdans'
-    );}
+
 
 
   const SUPABASE_URL='https://jcjrbnenetotdcqjcisv.supabase.co';

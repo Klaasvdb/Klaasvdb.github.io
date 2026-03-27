@@ -19,7 +19,7 @@ const CONFIG = {
  
   // Parking (wat verderop)
   parking_naam:   "Parking Chiro/Voetbal",                 // naam van de parking
-  parking_adres:  "Straat Y, 3000 Leuven",     // adres van de parking
+  parking_adres:  "Kartuizersstraat 2, 3052 Blanden",     // adres van de parking
  
   // Programma
   welkom_tijd:        "13:30",

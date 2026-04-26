@@ -67,7 +67,11 @@
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* Use 'fill' so the image stretches to exactly fill the page box —
+       this avoids subpixel cropping that would otherwise create a visible
+       seam at the spine where the two halves of the spread meet.
+       The aspect ratio difference is < 0.5% so no visible distortion. */
+    object-fit: fill;
     user-select: none;
     -webkit-user-drag: none;
     pointer-events: none;
@@ -7477,7 +7481,12 @@
         bookW = availW;
         bookH = bookW / bookRatio;
       }
-      return { width: Math.round(bookW), height: Math.round(bookH) };
+      // Force an even total width so each page is exactly bookW/2 px wide
+      // (no subpixel rounding mismatch between the two halves of the spread,
+      // which would otherwise show as a thin seam down the middle).
+      bookW = Math.round(bookW);
+      if (bookW % 2 !== 0) bookW -= 1;
+      return { width: bookW, height: Math.round(bookH) };
     }
 
     $(function () {

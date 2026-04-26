@@ -7496,7 +7496,34 @@
         acceleration: true,
         duration: 900,
         page: 1,
-        display: "double"
+        display: "double",
+        // turnCorners: "bl,br" is the default — only bottom corners are draggable.
+        // We keep cornerSize at its default (100px) so the visible fold size
+        // stays small and tasteful. Click-to-flip below covers the rest of
+        // the surface for easy navigation.
+        turnCorners: "bl,br"
+      });
+
+      // ----- Click-to-flip -----
+      // Clicking on the right half of the book advances; clicking on the left
+      // half goes back. We attach to the book element and read where the click
+      // landed relative to its centre.
+      $book.on('click', function (e) {
+        // Ignore clicks on interactive elements (QR area + RSVP button)
+        if ($(e.target).closest('.qr-link, .rsvp-btn').length) return;
+
+        // Suppress the synthetic click that fires at the end of a drag-to-flip
+        // (turn.js emits a tiny mousemove during the drag; we just check that
+        // the event is a genuine click, not a drag release).
+        if (e.detail === 0) return;       // keyboard-triggered click; ignore
+
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        if (x > rect.width / 2) {
+          $book.turn('next');
+        } else {
+          $book.turn('previous');
+        }
       });
 
       let resizeTimer;

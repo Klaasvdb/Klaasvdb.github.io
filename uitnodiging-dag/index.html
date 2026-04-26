@@ -7521,10 +7521,18 @@
         // Ignore clicks on interactive elements (QR area + RSVP button)
         if ($(e.target).closest('.qr-link, .rsvp-btn').length) return;
 
-        // Suppress the synthetic click that fires at the end of a drag-to-flip
-        // (turn.js emits a tiny mousemove during the drag; we just check that
-        // the event is a genuine click, not a drag release).
-        if (e.detail === 0) return;       // keyboard-triggered click; ignore
+        // Skip keyboard-synthesised clicks
+        if (e.detail === 0) return;
+
+        // If turn.js is currently animating (because it just started a flip
+        // from the user clicking on the corner-fold area), don't double-flip.
+        if ($book.turn('animating')) return;
+
+        // Use a small post-flip cooldown to also catch the case where turn.js
+        // has *just* completed a flip — clicking on the lifted corner triggers
+        // turn.js's own flip first, and the synthetic click follows a moment
+        // later. The cooldown flag below blocks that second flip.
+        if (clickCooldown) return;
 
         const rect = this.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -7533,6 +7541,15 @@
         } else {
           $book.turn('previous');
         }
+      });
+
+      // Set a brief cooldown after every turn.js-driven flip (whether by drag
+      // or by a previous click) so a stray synthetic click can't trigger a
+      // second flip immediately after.
+      let clickCooldown = false;
+      $book.on('turning turned', function () {
+        clickCooldown = true;
+        setTimeout(() => { clickCooldown = false; }, 1100);  // ~ flip duration
       });
 
       let resizeTimer;
